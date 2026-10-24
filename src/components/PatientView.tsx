@@ -24,8 +24,8 @@ interface PatientViewProps {
 }
 
 export default function PatientView({ token, patient, onProfileUpdate }: PatientViewProps) {
-  // Tabs: patient_info is default as requested, followed by doctors consulted, medical_reports, reminders, permissions, report_analyzer, and cloud_storage
-  const [activeTab, setActiveTab] = useState<'patient_info' | 'doctors' | 'medical_reports' | 'reminders' | 'permissions' | 'report_analyzer' | 'cloud_storage'>('patient_info');
+  // Tabs: patient_info is default as requested, followed by doctors consulted, medical_reports, reminders, permissions, and report_analyzer
+  const [activeTab, setActiveTab] = useState<'patient_info' | 'doctors' | 'medical_reports' | 'reminders' | 'permissions' | 'report_analyzer'>('patient_info');
   
   // Report Analyzer RAG States
   const [ragQuery, setRagQuery] = useState('');
@@ -35,7 +35,101 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
   const [analyzingReports, setAnalyzingReports] = useState(false);
   const [analysisError, setAnalysisError] = useState('');
   
-  // Custom secure Markdown-like parsing helper for RAG insights
+  // Dynamic prompt templates and easy language guidance for Report Analyzer
+  const languageQuickQueries: Record<string, { summary: string; synthesis: string; guidance: string; placeholder: string; labelSummary: string; labelSynthesis: string; labelGuidance: string }> = {
+    English: {
+      summary: "Give me an easy plain-language summary of my diagnosis and next steps.",
+      synthesis: "Synthesize findings across my blood reports and imaging scans in simple words.",
+      guidance: "What simple diet modifications, water intake, or activities should I follow based on these results?",
+      placeholder: "Enter your health question or choose a simple template above (e.g., 'What do these blood test results mean in easy words?')",
+      labelSummary: "💡 Overall Summary",
+      labelSynthesis: "🧬 Synthesize Scans & Blood Test",
+      labelGuidance: "🥗 Diet & Activity Guidance"
+    },
+    Hindi: {
+      summary: "मेरी सभी जांच रिपोर्ट आसान और सरल हिंदी में समझाएं।",
+      synthesis: "खून की जांच और अन्य रिपोर्ट का सीधा और आसान मतलब क्या है?",
+      guidance: "इन रिपोर्ट के अनुसार मुझे रोज़ाना खाने-पीने और टहलने में क्या सावधानियां रखनी चाहिए?",
+      placeholder: "अपनी भाषा में सवाल पूछें या ऊपर दिए गए विकल्प चुनें (जैसे: 'मेरी रिपोर्ट का क्या मतलब है?')",
+      labelSummary: "💡 आसान रिपोर्ट सारांश",
+      labelSynthesis: "🧬 जांच और खून रिपोर्ट का मतलब",
+      labelGuidance: "🥗 रोज़मर्रा का खाना व देखभाल"
+    },
+    Spanish: {
+      summary: "Explique mis informes médicos en palabras muy sencillas y claras.",
+      synthesis: "¿Qué significan juntos mis análisis de sangre y escaneos de forma simple?",
+      guidance: "¿Qué consejos fáciles de comida, agua y ejercicio debo seguir según estos resultados?",
+      placeholder: "Escriba su consulta o elija una sugerencia (ej. '¿Qué significan estos resultados en palabras sencillas?')",
+      labelSummary: "💡 Resumen Sencillo",
+      labelSynthesis: "🧬 Síntesis de Pruebas",
+      labelGuidance: "🥗 Dieta y Hábitos Fáciles"
+    },
+    French: {
+      summary: "Expliquez mes bilans médicaux en termes simples, clairs et rassurants.",
+      synthesis: "Résumez mes prises de sang et scanners de façon facile à comprendre.",
+      guidance: "Quels conseils simples d'alimentation et d'activité quotidienne me conseillez-vous ?",
+      placeholder: "Posez votre question en toute simplicité ou cliquez sur un modèle ci-dessus...",
+      labelSummary: "💡 Résumé Simple",
+      labelSynthesis: "🧬 Synthèse des Examens",
+      labelGuidance: "🥗 Conseils et Alimentation"
+    },
+    German: {
+      summary: "Erklären Sie meine Befunde in ganz einfacher und verständlicher Sprache.",
+      synthesis: "Fassen Sie meine Blutwerte und Scans einfach und übersichtlich zusammen.",
+      guidance: "Welche alltagstauglichen Tipps für Ernährung und Bewegung sind jetzt sinnvoll?",
+      placeholder: "Geben Sie Ihre Frage in einfachen Worten ein oder wählen Sie eine Vorlage...",
+      labelSummary: "💡 Einfache Übersicht",
+      labelSynthesis: "🧬 Labor & Befunde Zusammenfassung",
+      labelGuidance: "🥗 Tipps für Ernährung & Alltag"
+    },
+    Marathi: {
+      summary: "माझे सर्व वैद्यकीय अहवाल अगदी सोप्या व साध्या मराठीत समजावून सांगा.",
+      synthesis: "रक्ताची तपासणी आणि स्कॅनचा सोपा सारांश काय आहे?",
+      guidance: "या अहवालानुसार दैनंदिन आहार, पाणी आणि व्यायामाबद्दल सोपे उपाय सांगा.",
+      placeholder: "आपला प्रश्न येथे लिहा किंवा वरील सोपा पर्याय निवडा...",
+      labelSummary: "💡 सोपा अहवाल सारांश",
+      labelSynthesis: "🧬 तपासणीचा सोपा अर्थ",
+      labelGuidance: "🥗 सोपा आहार व दिनचर्या"
+    },
+    Arabic: {
+      summary: "اشرح جميع تقاريري الطبية بلغة عربية مبسطة وسهلة الفهم تماماً.",
+      synthesis: "ما هو المعنى البسيط لنتائج فحوصات الدم والأشعة معاً؟",
+      guidance: "ما هي النصائح السهلة للغذاء اليومي والنشاط المناسب لحالति؟",
+      placeholder: "اكتب استفسارك بلغة بسيطة أو اختر من الاقتراحات أعلاه...",
+      labelSummary: "💡 ملخص مبسط وسهل",
+      labelSynthesis: "🧬 قراءة الفحوصات والدم",
+      labelGuidance: "🥗 إرشادات الغذاء والنشاط"
+    },
+    Tamil: {
+      summary: "எனது அனைத்து மருத்துவ அறிக்கைகளையும் மிக எளிய தமிழில் புரியும்படி விளக்குங்கள்.",
+      synthesis: "இரத்த பரிசோதனை மற்றும் ஸ்கேன் முடிவுகளின் நேரடி சுருக்கம் என்ன?",
+      guidance: "இந்த முடிவுகளின் அடிப்படையில் நான் பின்பற்ற வேண்டிய எளிய உணவு மற்றும் உடற்பயிற்சி முறைகள் யாவை?",
+      placeholder: "உங்கள் கேள்வியை எளிய தமிழில் இங்கே பதிவு செய்யுங்கள் அல்லது மேலே உள்ளதைத் தேர்ந்தெடுக்கவும்...",
+      labelSummary: "💡 எளிய சுருக்கம்",
+      labelSynthesis: "🧬 பரிசோதனை விளக்கம்",
+      labelGuidance: "🥗 எளிய உணவு ஆலோசனைகள்"
+    },
+    Telugu: {
+      summary: "నా వైద్య నివేదికలను చాలా సులభమైన మరియు స్పష్టమైన మాటల్లో వివరించండి.",
+      synthesis: "రక్త పరీక్షలు మరియు స్కాన్ల సాధారణ మరియు సులభ అర్థం ఏమిటి?",
+      guidance: "ఈ ఫలితాల ప్రకారం నేను పాటించవలసిన సులభమైన ఆహార మరియు ఆరోగ్య సూచనలు ఏమిటి?",
+      placeholder: "మీ ప్రశ్నను సులభమైన మాటల్లో రాయండి లేదా పై ఆప్షన్ ఎంచుకోండి...",
+      labelSummary: "💡 సులభ సారాంశం",
+      labelSynthesis: "🧬 పరీక్షల సులభ విశ్లేషణ",
+      labelGuidance: "🥗 సులభమైన ఆహార సూచనలు"
+    },
+    Bengali: {
+      summary: "আমার সব মেডিকেল রিপোর্ট খুব সহজ ও পরিষ্কার বাংলায় বুঝিয়ে বলুন।",
+      synthesis: "রক্ত পরীক্ষা ও স্ক্যানের সহজ ও সাধারণ সারসংক্ষেপ দিন।",
+      guidance: "এই রিপোর্টের ভিত্তিতে দৈনন্দিন খাবার, জল ও জীবনযাত্রার সহজ নিয়ম কী?",
+      placeholder: "খুব সহজ কথায় আপনার প্রশ্ন লিখুন অথবা উপরের বিকল্প বাছুন...",
+      labelSummary: "💡 সহজ রিপোর্ট সারসংক্ষেপ",
+      labelSynthesis: "🧬 রক্ত ও পরীক্ষার সহজ ব্যাখ্যা",
+      labelGuidance: "🥗 দৈনন্দিন সহজ খাবার ও যত্ন"
+    }
+  };
+  
+  // Custom secure Markdown-like parsing helper for clinical insights
   const renderMarkdown = (text: string) => {
     if (!text) return null;
     
@@ -930,7 +1024,7 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to register report");
       
-      setMessage("Medical report successfully registered and secured in Google Cloud Storage!");
+      setMessage("Medical report successfully registered and secured!");
       setNewReportTitle('');
       setNewReportDiagnoses('');
       setNewReportNotes('');
@@ -2027,9 +2121,9 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
                                       target="_blank"
                                       rel="noreferrer"
                                       className="px-2.5 py-1.5 bg-sky-50 border border-sky-200 text-sky-800 text-[11px] font-bold rounded-lg hover:bg-sky-100 transition-all flex items-center gap-1 shadow-xs"
-                                      title={`Stored in Google Cloud Storage: ${report.gcsUri}`}
+                                      title="Secure Document"
                                     >
-                                      <Cloud size={12} className="text-sky-600" /> GCS Document
+                                      <FileText size={12} className="text-sky-600" /> Attached Document
                                     </a>
                                   )}
                                   <button
@@ -2162,8 +2256,8 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
 
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
-                      <span>Attach Document to Google Cloud Storage</span>
-                      <span className="text-teal-700 font-bold lowercase text-[9px]">gs:// partition</span>
+                      <span>Attach Document / Scan</span>
+                      <span className="text-teal-700 font-bold lowercase text-[9px]">Secure Upload</span>
                     </label>
                     <div className="relative border border-dashed border-teal-300 hover:border-teal-500 bg-teal-50/40 rounded-xl p-3 text-center transition-all cursor-pointer">
                       <input
@@ -2850,35 +2944,42 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
                   </h3>
 
                   {/* Suggestion Prompt Chips */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <button
-                      onClick={() => setRagQuery("Give me a plain language summary of my diagnosis and suggest follow-up actions.")}
-                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-150 hover:bg-slate-100 text-[10px] text-slate-600 font-semibold rounded-full transition-all"
-                    >
-                      💡 Overall Summary
-                    </button>
-                    <button
-                      onClick={() => setRagQuery("Synthesize findings across my blood reports and imaging scans. Are there high markers?")}
-                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-150 hover:bg-slate-100 text-[10px] text-slate-600 font-semibold rounded-full transition-all"
-                    >
-                      🧬 Synthesize Scans & Blood Test
-                    </button>
-                    <button
-                      onClick={() => setRagQuery("What preventative measures, diet modifications, or activities should I follow based on these results?")}
-                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-150 hover:bg-slate-100 text-[10px] text-slate-600 font-semibold rounded-full transition-all"
-                    >
-                      🥗 Diet & Activity Guidance
-                    </button>
-                  </div>
+                  {(() => {
+                    const currentLangTemplates = languageQuickQueries[ragLanguage] || languageQuickQueries['English'];
+                    return (
+                      <>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          <button
+                            onClick={() => setRagQuery(currentLangTemplates.summary)}
+                            className="px-2.5 py-1.5 bg-slate-50 border border-slate-150 hover:bg-slate-100 text-[10px] text-slate-600 font-semibold rounded-full transition-all flex items-center gap-1.5"
+                          >
+                            {currentLangTemplates.labelSummary}
+                          </button>
+                          <button
+                            onClick={() => setRagQuery(currentLangTemplates.synthesis)}
+                            className="px-2.5 py-1.5 bg-slate-50 border border-slate-150 hover:bg-slate-100 text-[10px] text-slate-600 font-semibold rounded-full transition-all flex items-center gap-1.5"
+                          >
+                            {currentLangTemplates.labelSynthesis}
+                          </button>
+                          <button
+                            onClick={() => setRagQuery(currentLangTemplates.guidance)}
+                            className="px-2.5 py-1.5 bg-slate-50 border border-slate-150 hover:bg-slate-100 text-[10px] text-slate-600 font-semibold rounded-full transition-all flex items-center gap-1.5"
+                          >
+                            {currentLangTemplates.labelGuidance}
+                          </button>
+                        </div>
 
-                  {/* Question input */}
-                  <textarea
-                    rows={4}
-                    value={ragQuery}
-                    onChange={(e) => setRagQuery(e.target.value)}
-                    placeholder="Enter your clinical query or choose a template above... e.g., 'What do these hematology and MRI scan results mean together?' or 'Explain my pre-diabetes findings in simple terms.'"
-                    className="w-full text-xs text-slate-800 bg-slate-50/50 border border-slate-200 focus:border-teal-400 p-4 rounded-2xl focus:ring-1 focus:ring-teal-400 outline-none resize-none leading-relaxed"
-                  />
+                        {/* Question input */}
+                        <textarea
+                          rows={4}
+                          value={ragQuery}
+                          onChange={(e) => setRagQuery(e.target.value)}
+                          placeholder={currentLangTemplates.placeholder}
+                          className="w-full text-xs text-slate-800 bg-slate-50/50 border border-slate-200 focus:border-teal-400 p-4 rounded-2xl focus:ring-1 focus:ring-teal-400 outline-none resize-none leading-relaxed"
+                        />
+                      </>
+                    );
+                  })()}
                 </div>
 
                 {/* Form Controls */}
@@ -2887,7 +2988,15 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
                     <label className="text-[10px] font-black text-slate-400 uppercase">Analysis Language</label>
                     <select
                       value={ragLanguage}
-                      onChange={(e) => setRagLanguage(e.target.value)}
+                      onChange={(e) => {
+                        const newLang = e.target.value;
+                        setRagLanguage(newLang);
+                        const newTemplates = languageQuickQueries[newLang] || languageQuickQueries['English'];
+                        // Auto-fill friendly plain question in chosen language if empty or default
+                        if (!ragQuery.trim() || ragQuery.includes("summary") || ragQuery.includes("अहवाल") || ragQuery.includes("रिपोर्ट") || ragQuery.includes("informe") || ragQuery.includes("bilan")) {
+                          setRagQuery(newTemplates.summary);
+                        }
+                      }}
                       className="text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-1 focus:ring-[#006666] outline-none"
                     >
                       <option value="English">English</option>
@@ -2910,11 +3019,11 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
                   >
                     {analyzingReports ? (
                       <>
-                        <RefreshCw size={14} className="animate-spin" /> Analyzing Context...
+                        <RefreshCw size={14} className="animate-spin" /> Analyzing Reports...
                       </>
                     ) : (
                       <>
-                        <Send size={14} /> Run RAG Clinical Analysis
+                        <Send size={14} /> Analyze Reports
                       </>
                     )}
                   </button>
@@ -2954,8 +3063,8 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
                       <Sparkles className="absolute inset-0 m-auto text-[#EAA82C] animate-pulse" size={16} />
                     </div>
                     <div className="text-center space-y-1">
-                      <p className="text-xs font-bold text-slate-700">RAG Semantic Alignment Active</p>
-                      <p className="text-[10px] text-slate-400 animate-pulse">Decrypting sources • Constructing patient context • Synthesizing medical explanation</p>
+                      <p className="text-xs font-bold text-slate-700">Clinical Analysis Active</p>
+                      <p className="text-[10px] text-slate-400 animate-pulse">Reading selected records • Synthesizing easy medical explanation in {ragLanguage}</p>
                     </div>
                   </div>
                 )}

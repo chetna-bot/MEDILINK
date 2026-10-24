@@ -200,7 +200,7 @@ export default function HospitalDoctorView({ token, user, role }: HospitalDoctor
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      setMessage("Medical record and file successfully synchronized to Google Cloud Storage!");
+      setMessage("Medical record and document successfully registered and secured!");
       setRecordTitle('');
       setRecordDiagnoses('');
       setRecordNotes('');
@@ -620,8 +620,8 @@ export default function HospitalDoctorView({ token, user, role }: HospitalDoctor
 
                   <div>
                     <label className="block text-[9px] font-bold text-slate-400 uppercase mb-1 flex justify-between">
-                      <span>Attach File to Google Cloud Storage</span>
-                      <span className="text-teal-700 font-mono lowercase text-[8px]">users/{selectedPatient.id}/files/</span>
+                      <span>Attach Clinical Document / Scan</span>
+                      <span className="text-teal-700 font-mono lowercase text-[8px]">Encrypted Upload</span>
                     </label>
                     <div className="relative border border-dashed border-slate-300 hover:border-teal-500 bg-slate-50/70 rounded-xl p-2.5 text-center transition-all cursor-pointer">
                       <input

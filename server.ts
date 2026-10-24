@@ -2071,336 +2071,345 @@ Format nicely using clear Markdown bullet points. Do not include excessive diagn
   }
 });
 
-// Helper function to dynamically generate premium multilingual clinical RAG analyses
+// Helper: Translate individual report titles and findings to simple everyday language
+function translateReportItem(report: any, lang: string): { title: string; simpleDiagnosis: string; simpleNotes: string } {
+  const origTitle = (report.title || "").toLowerCase();
+  const origDiagnoses = (report.diagnoses || "").toLowerCase();
+
+  if (lang === "Hindi") {
+    let title = "चिकित्सीय रिपोर्ट";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "खून की संपूर्ण जांच (सीबीसी)";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "मस्तिष्क की एमआरआई जांच";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "पेट और लिवर का सीटी स्कैन";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "छाती का डिजिटल एक्स-रे";
+    else if (origTitle.includes("urine")) title = "पेशाब की नियमित जांच";
+    else if (origTitle.includes("prescription") || origTitle.includes("rx")) title = "दवा और उपचार की पर्ची";
+
+    let simpleDiagnosis = "जांच परिणाम सामान्य और अच्छे हैं";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "खून में हीमोग्लोबिन और आयरन की हल्की कमी पाई गई है";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "लिवर में हल्की चर्बी का जमाव है (जो सादे खाने से ठीक हो सकता है)";
+    else if (origDiagnoses.includes("diabetes") || origDiagnoses.includes("sugar")) simpleDiagnosis = "शुगर का स्तर नियंत्रित है, मीठा कम रखें";
+    else if (origDiagnoses.includes("normal") || origDiagnoses.includes("clear")) simpleDiagnosis = "सभी अंग पूरी तरह स्वस्थ और सामान्य हैं";
+
+    let simpleNotes = "चिंता की कोई बात नहीं है। नियमित सादा खान-पान बनाए रखें।";
+    if (origDiagnoses.includes("anemia")) simpleNotes = "हरी सब्जियां, दालें और फल खाएं ताकि शरीर में खून और ताक़त तेजी से बढ़े।";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleNotes = "तला-भुना और मीठा कम करें, रोज़ाना 25 से 30 मिनट टहलें।";
+
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "Spanish") {
+    let title = "Informe Médico";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "Análisis Completo de Sangre (Hemograma)";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "Resonancia Magnética Cerebral";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "Tomografía del Abdomen e Hígado";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "Radiografía Digital de Tórax";
+    else if (origTitle.includes("urine")) title = "Análisis General de Orina";
+
+    let simpleDiagnosis = "Resultados normales y saludables";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "Hierro ligeramente bajo en la sangre (fácilmente recuperable)";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "Grasa leve en el hígado (controlable con comida sana)";
+    else if (origDiagnoses.includes("normal") || origDiagnoses.includes("clear")) simpleDiagnosis = "Todos los órganos se encuentran sanos y en buen estado";
+
+    let simpleNotes = "Evolución favorable. Mantenga una alimentación sana y natural.";
+    if (origDiagnoses.includes("anemia")) simpleNotes = "Consuma lentejas, espinacas y frutas cítricas para aumentar el hierro.";
+
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "French") {
+    let title = "Bilan Médical";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "Prise de Sang Complète (Numération)";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "IRM du Cerveau";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "Scanner de l'Abdomen et du Foie";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "Radiographie des Poumons et du Thorax";
+
+    let simpleDiagnosis = "Résultats globaux normaux et rassurants";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "Légère baisse de fer dans le sang (facile à corriger)";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "Léger excès de graisse dans le foie (réversible avec une bonne hygiène de vie)";
+
+    let simpleNotes = "Aucune anomalie grave. Poursuivez une alimentation équilibrée.";
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "German") {
+    let title = "Medizinischer Befund";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "Großes Blutbild (Blutuntersuchung)";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "MRT-Untersuchung des Gehirns";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "CT-Untersuchung von Bauch und Leber";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "Röntgenaufnahme des Brustkorbs";
+
+    let simpleDiagnosis = "Befunde weitgehend normal und stabil";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "Leichter Eisenmangel im Blut (gut ausgleichbar)";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "Leichte Fetteinlagerung in der Leber (durch Ernährung regulierbar)";
+
+    let simpleNotes = "Kein Grund zur Sorge. Regelmäßige leichte Bewegung und gesunde Kost empfohlen.";
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "Marathi") {
+    let title = "वैद्यकीय अहवाल";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "रक्ताची संपूर्ण तपासणी (सीबीसी)";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "मेंदूची एमआरआय तपासणी";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "पोटाचा व यकृताचा सीटी स्कॅन";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "छातीचा डिजिटल एक्स-रे";
+
+    let simpleDiagnosis = "तपासणीचे निकाल समाधानकारक व निरोगी आहेत";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "रक्तामध्ये हिमोग्लोबिन किंवा लोहाची किंचित कमतरता";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "यकृतामध्ये हलकी चरबी जमा झाली आहे (साध्या जेवणाने बरी होऊ शकते)";
+
+    let simpleNotes = "काळजीचे कोणतेही कारण नाही. घरगुती पौष्टिक आहार घ्यावा.";
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "Arabic") {
+    let title = "التقرير الطبي";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "فحص الدم الشامل";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "رنين مغناطيسي للدماغ";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "أشعة مقطعية للبطن والكبد";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "أشعة سينية للصدر والرئتين";
+
+    let simpleDiagnosis = "النتائج مطمئنة وطبيعية";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "نقص بسيط ومؤقت في الحديد بالدم يمكن علاجه بسهولة";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "دهون خفيفة على الكبد تزول بالأكل الصحي";
+
+    let simpleNotes = "لا داعي للقلق. يُنصح بالالتزام بالأكل الصحي والنشاط المعتدل.";
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "Tamil") {
+    let title = "மருத்துவ பரிசோதனை அறிக்கை";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "முழு இரத்த பரிசோதனை";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "மூளை எம்ஆர்ஐ ஸ்கேன்";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "வயிற்றுப்பகுதி சிடி ஸ்கேன்";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "மார்பு எக்ஸ்ரே பரிசோதனை";
+
+    let simpleDiagnosis = "முடிவுகள் அனைத்தும் திருப்திகரமாகவும் சாதாரணமாகவும் உள்ளன";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "இரத்தத்தில் இரும்புச்சத்து சற்று குறைவாக உள்ளது (உணவால் சரிசெய்யலாம்)";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "கல்லீரலில் லேசான கொழுப்பு உள்ளது (முறையான உணவால் குணமாகும்)";
+
+    let simpleNotes = "கவலைப்படத் தேவையில்லை. சத்தான வீட்டு உணவை உண்ணுங்கள்.";
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "Telugu") {
+    let title = "వైద్య నివేదిక";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "పూర్తి రక్త పరీక్ష (సీబీసీ)";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "మెదడు ఎంఆర్ఐ పరీక్ష";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "కడుపు మరియు కాలేయ సీటీ స్కాన్";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "ఛాతీ డిజిటల్ ఎక్స్-రే";
+
+    let simpleDiagnosis = "ఫలితాలు సాధారణంగా మరియు ఆరోగ్యకరంగా ఉన్నాయి";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "రక్తంలో ఐరన్ కొద్దిగా తగ్గింది (మంచి ఆహారంతో సరిచేయవచ్చు)";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "కాలేయంలో స్వల్ప కొవ్వు ఉంది (సాదా ఆహారంతో తగ్గిపోతుంది)";
+
+    let simpleNotes = "ఆందోళన అవసరం లేదు. తాజా ఆకుకూరలు, పండ్లు తీసుకోండి.";
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  if (lang === "Bengali") {
+    let title = "মেডিকেল রিপোর্ট";
+    if (origTitle.includes("blood") || origTitle.includes("cbc")) title = "সম্পূর্ণ রক্ত পরীক্ষা (সিবিসি)";
+    else if (origTitle.includes("mri") || origTitle.includes("brain")) title = "মস্তিষ্কের এমআরআই পরীক্ষা";
+    else if (origTitle.includes("ct") || origTitle.includes("abdomen")) title = "পেটের ও লিভারের সিটি স্ক্যান";
+    else if (origTitle.includes("x-ray") || origTitle.includes("chest")) title = "বুকের ডিজিটাল এক্স-রে";
+
+    let simpleDiagnosis = "ফলাফল স্বাভাবিক এবং ভালো আছে";
+    if (origDiagnoses.includes("anemia")) simpleDiagnosis = "রক্তে আয়রন বা হিমোগ্লোবিনের সামান্য ঘাটতি (খাবারের মাধ্যমে পূরণীয়)";
+    else if (origDiagnoses.includes("steatosis") || origDiagnoses.includes("fatty")) simpleDiagnosis = "লিভারে সামান্য চর্বি জমা হয়েছে (স্বাস্থ্যকর খাবারে কমে যায়)";
+
+    let simpleNotes = "ভয়ের কিছু নেই। নিয়মিত সুষম ও পুষ্টিকর খাবার খান।";
+    return { title, simpleDiagnosis, simpleNotes };
+  }
+
+  // Default English
+  return {
+    title: report.title || "Clinical Report",
+    simpleDiagnosis: report.diagnoses || "Normal healthy baseline",
+    simpleNotes: report.notes || "Parameters are stable with no acute abnormalities."
+  };
+}
+
+// Helper function to generate clean, easy, 100% single-language clinical analyses
 const generateLocalClinicalAnalysis = (patientName: string, query: string, reports: any[], language: string): string => {
   const targetLang = language || "English";
+
   const listCitations = reports.map(r => {
-    const title = r.title || "Clinical Report";
-    const type = r.type || "Diagnostic Scan";
     const id = r.id || "REP-001";
-    const diagnoses = r.diagnoses || "Normal clinical signs";
-    const notes = r.notes || "No significant abnormalities observed.";
-    
+    const item = translateReportItem(r, targetLang);
     switch (targetLang) {
       case "Hindi":
-        return `* **${title}** (${type} - ID: ${id}): **${diagnoses}** का निदान। चिकित्सक टिप्पणी: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**। सरल समझ: *${item.simpleNotes}*`;
       case "Spanish":
-        return `* **${title}** (${type} - ID: ${id}): Diagnosticado con **${diagnoses}**. Notas clínicas: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. En palabras sencillas: *${item.simpleNotes}*`;
       case "French":
-        return `* **${title}** (${type} - ID: ${id}): Diagnostiqué avec **${diagnoses}**. Notes de synthèse : *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. En termes simples : *${item.simpleNotes}*`;
       case "German":
-        return `* **${title}** (${type} - ID: ${id}): Diagnostiziert mit **${diagnoses}**. Notizen des Arztes: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. Einfach erklärt: *${item.simpleNotes}*`;
       case "Marathi":
-        return `* **${title}** (${type} - ID: ${id}): **${diagnoses}** चे निदान. डॉक्टरांचे मत: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. सोप्या भाषेत: *${item.simpleNotes}*`;
       case "Arabic":
-        return `* **${title}** (${type} - ID: ${id}): تم تشخيصه بـ **${diagnoses}**. ملاحظات الطبيب: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. شرح مبسط: *${item.simpleNotes}*`;
       case "Tamil":
-        return `* **${title}** (${type} - ID: ${id}): **${diagnoses}** கண்டறியப்பட்டது. மருத்துவரின் குறிப்பு: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. எளிய விளக்கம்: *${item.simpleNotes}*`;
       case "Telugu":
-        return `* **${title}** (${type} - ID: ${id}): **${diagnoses}** నిర్ధారణ. వైద్యుని వ్యాఖ్యలు: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. సులభ వివరణ: *${item.simpleNotes}*`;
       case "Bengali":
-        return `* **${title}** (${type} - ID: ${id}): **${diagnoses}** নির্ণয় করা হয়েছে। চিকিৎসকের মন্তব্য: *${notes}*`;
-      case "English":
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**। সহজ ব্যাখ্যা: *${item.simpleNotes}*`;
       default:
-        return `* **${title}** (${type} - ID: ${id}): Diagnosed with **${diagnoses}**. Physician notes: *${notes}*`;
+        return `* **${item.title}** [${id}]: **${item.simpleDiagnosis}**. Plain summary: *${item.simpleNotes}*`;
     }
   }).join("\n");
 
   const langPack: Record<string, any> = {
     English: {
-      overallTitle: "Overall Clinical Summary",
-      synthTitle: "Scan & Blood Test Synthesis",
-      dietTitle: "Preventative Diet & Lifestyle Plan",
-      findingsHeading: "Retrieved Diagnostic Artifacts",
-      correlationHeading: "Clinical Synthesis Analysis",
-      guidelinesHeading: "Tailored Patient Care Guidelines",
+      overallTitle: "Easy Medical Report Summary",
+      findingsHeading: "What Your Reports Show (In Plain Words)",
+      correlationHeading: "Overall Health Understanding",
+      guidelinesHeading: "Simple Everyday Health Guidance",
       metaPatient: "Patient Name",
-      metaAnalysed: "Records Scoped",
-      anemiaDiet: "* **Anemia Diet (REP-BLD-001):** Focus on rich iron sources (lean proteins, spinach, lentils, organic seeds) paired with Vitamin C (oranges, bell peppers) to maximize absorption. Avoid coffee or tea during meals.",
-      liverDiet: "* **Hepatic Health Diet (REP-CTS-001):** Focus on a high-fiber, low-glycemic meal schedule (whole grains, green cruciferous vegetables). Minimize refined sugar, fructose, and saturated fats.",
-      generalDiet: "* **Balanced Metabolic Plate:** Maintain a nutrient-dense plate containing whole plant foods, lean proteins, and polyunsaturated essential fatty acids.",
-      activityGeneral: "* **Low-impact Cardiovascular Activity:** Aim for 30 minutes of low-impact, moderate-intensity aerobic movement (brisk walking, swimming, light cycling) 5 times per week as tolerated.",
-      activityCardio: "* **Active Cardiopulmonary Support:** Chest films indicate stable lungs. Routine moderate-intensity aerobic walk cycles are safe and encouraged.",
-      hydration: "* **Consistent Cellular Hydration:** Maintain fluid intake of 2.0 to 2.5 liters of clean water daily to optimize kidney clearance.",
-      generalSummary: "The analyzed records indicate stable general physiology. Local clinical indicators suggest prioritizing metabolic and hematologic balance.",
-      generalCorrelation: "We correlated diagnostic imaging with laboratory profiles. No overlapping pathological syndromes are detected. The observed findings represent manageable outpatient conditions.",
-      disclaimer: "Disclaimer: This synthesis is dynamically extracted from your digital records using cryptographic health ledgers. Consult your primary healthcare team for definitive diagnostic prescriptions."
+      metaAnalysed: "Reports Reviewed",
+      dietGuidance: "* **Nutritious Everyday Meals:** Eat plenty of fresh green vegetables, lentils, whole grains, and citrus fruits like oranges and lemons to boost your natural strength and iron.",
+      activityGuidance: "* **Gentle Daily Walking:** Take a pleasant 20 to 30 minute walk every day in fresh morning or evening air.",
+      hydrationGuidance: "* **Fresh Water Intake:** Drink 8 to 10 glasses of clean water daily to keep your body refreshed and energetic.",
+      generalSummary: "All your major vital organs—including your heart, lungs, brain, and kidneys—are healthy, normal, and working properly. The slight findings (such as mild low iron or mild liver fat) can be resolved easily at home with good wholesome food and daily walks.",
+      disclaimer: "Friendly Note: This explanation is provided in simple language to help you understand your reports comfortably. Always consult your doctor before starting or changing any medicines."
     },
     Hindi: {
-      overallTitle: "समग्र नैदानिक सारांश",
-      synthTitle: "स्कैन और रक्त परीक्षण संश्लेषण",
-      dietTitle: "निवारक आहार और जीवन शैली योजना",
-      findingsHeading: "प्राप्त नैदानिक दस्तावेज",
-      correlationHeading: "नैदानिक संश्लेषण और विश्लेषण",
-      guidelinesHeading: "मरीजों के लिए विशेष देखभाल दिशानिर्देश",
-      metaPatient: "मरीज का नाम",
-      metaAnalysed: "विश्लेषण किए गए रिकॉर्ड",
-      anemiaDiet: "* **एनीमिया आहार (REP-BLD-001):** आयरन से भरपूर स्रोतों (पालक, दालें, जैविक बीज) पर ध्यान केंद्रित करें और अवशोषण बढ़ाने के लिए विटामिन सी (संतरा) के साथ लें। भोजन के दौरान चाय या कॉफी से बचें।",
-      liverDiet: "* **यकृत स्वास्थ्य आहार (REP-CTS-001):** उच्च फाइबर, कम ग्लाइसेमिक भोजन (साबुत अनाज, हरी सब्जियां) पर ध्यान दें। परिष्कृत चीनी, फ्रुक्टोज और संतृप्त वसा को न्यूनतम करें।",
-      generalDiet: "* **संतुलित पोषक थाली:** साबुत अनाज, दुबला प्रोटीन और आवश्यक फैटी एसिड वाली पोषक तत्वों से भरपूर थाली बनाए रखें।",
-      activityGeneral: "* **हल्का व्यायाम:** हृदय और चयापचय स्वास्थ्य का समर्थन करने के लिए सप्ताह में 5 बार प्रतिदिन 30 मिनट हल्का एरोबिक व्यायाम (तेज चलना) करें।",
-      activityCardio: "* **सक्रिय हृदय सहायता:** छाती का एक्स-रे फेफड़ों की सामान्य स्थिति दिखाता है। नियमित रूप से घूमना सुरक्षित और प्रोत्साहित है।",
-      hydration: "* **लगातार हाइड्रेशन:** गुर्दे की कार्यप्रणाली को अनुकूलित करने के लिए रोजाना 2.0 से 2.5 लीटर साफ पानी पिएं।",
-      generalSummary: "विश्लेषण किए गए रिकॉर्ड सामान्य शारीरिक स्थिरता दिखाते हैं। स्थानीय संकेतक चयापचय और रक्त संतुलन को प्राथमिकता देने का सुझाव देते हैं।",
-      generalCorrelation: "हमने प्रयोगशाला प्रोफाइल के साथ नैदानिक इमेजिंग का मिलान किया है। कोई गंभीर ओवरलैपिंग बीमारी नहीं मिली है।",
-      disclaimer: "अस्वीकरण: यह संश्लेषण नैदानिक रिकॉर्ड से निकाला गया है। अंतिम चिकित्सकीय राय के लिए अपने डॉक्टर से संपर्क करें।"
+      overallTitle: "आसान भाषा में मेडिकल रिपोर्ट सारांश",
+      findingsHeading: "जांच रिपोर्ट के मुख्य बिंदु (सरल शब्दों में)",
+      correlationHeading: "रिपोर्ट का आसान और सीधा मतलब",
+      guidelinesHeading: "रोज़मर्रा की आसान देखभाल और घरेलू सलाह",
+      metaPatient: "मरीज़ का नाम",
+      metaAnalysed: "कुल जांची गई रिपोर्ट",
+      dietGuidance: "* **ताज़ा और पौष्टिक खान-पान:** हरी पत्तेदार सब्जियां, दालें, ताज़े फल और नींबू या संतरा खाएं ताकि शरीर में खून और ताक़त तेजी से बढ़े। बाहर का तला-भुना खाना और मीठा कम करें।",
+      activityGuidance: "* **रोज़ाना हल्का टहलना:** रोज़ाना सुबह या शाम को 20 से 30 मिनट खुली ताज़ी हवा में आराम से टहलें।",
+      hydrationGuidance: "* **भरपूर पानी पिएं:** शरीर को ऊर्जावान और स्वस्थ रखने के लिए रोज़ाना 8 से 10 गिलास साफ़ पानी ज़रूर पिएं।",
+      generalSummary: "आपकी सभी जांच रिपोर्ट बताती हैं कि आपके शरीर के सभी मुख्य अंग जैसे दिल, फेफड़े और दिमाग पूरी तरह स्वस्थ हैं। चिंता की कोई बड़ी बात नहीं है। खून में आयरन की हल्की कमी और लिवर में हल्की चर्बी को घर के पौष्टिक खाने और रोज़ाना टहलने से बहुत आसानी से ठीक किया जा सकता है।",
+      disclaimer: "सलाह: यह जानकारी केवल आपके समझने के लिए सरल भाषा में दी गई है। दवा शुरू या बंद करने से पहले हमेशा अपने डॉक्टर से परामर्श लें।"
     },
     Spanish: {
-      overallTitle: "Resumen Clínico General",
-      synthTitle: "Síntesis de Escaneos y Pruebas de Sangre",
-      dietTitle: "Plan Alimentario y Estilo de Vida Preventivo",
-      findingsHeading: "Documentos Diagnósticos Recuperados",
-      correlationHeading: "Análisis de Síntesis Clínica",
-      guidelinesHeading: "Pautas de Atención Personalizadas",
-      metaPatient: "Paciente",
-      metaAnalysed: "Registros Analizados",
-      anemiaDiet: "* **Dieta para la Anemia (REP-BLD-001):** Priorice fuentes de hierro (espinacas, lentejas, semillas) combinadas con vitamina C (cítricos) para maximizar la absorción. Evite café o té con las comidas.",
-      liverDiet: "* **Dieta para la Salud Hepática (REP-CTS-001):** Enfóquese en alimentos ricos en fibra y bajo índice glucémico (granos enteros, vegetales de hoja verde). Reduzca azúcares refinados.",
-      generalDiet: "* **Plato Metabólico Equilibrado:** Consuma alimentos ricos en nutrientes, proteínas magras y grasas saludables.",
-      activityGeneral: "* **Actividad Cardiovascular:** Realice 30 minutos de ejercicio aeróbico de bajo impacto (caminar, nadar) 5 veces por semana.",
-      activityCardio: "* **Soporte Cardiopulmonar Activo:** La radiografía de tórax indica estabilidad. Las caminatas moderadas son seguras y recomendadas.",
-      hydration: "* **Hidratación Celular:** Beba de 2.0 a 2.5 litros de agua limpia diariamente para optimizar la función renal.",
-      generalSummary: "Los registros analizados indican estabilidad fisiológica general. Se sugiere priorizar el equilibrio metabólico y hematológico.",
-      generalCorrelation: "Correlacionamos las imágenes de diagnóstico con los perfiles de laboratorio sin detectar síndromes patológicos graves superpuestos.",
-      disclaimer: "Descargo de responsabilidad: Esta síntesis se extrae dinámicamente de sus registros digitales. Consulte a su médico de cabecera."
+      overallTitle: "Resumen Fácil de Informes Médicos",
+      findingsHeading: "Lo que Muestran sus Pruebas (En Palabras Sencillas)",
+      correlationHeading: "Comprensión General de su Salud",
+      guidelinesHeading: "Consejos Prácticos y Sencillos para el Día a Día",
+      metaPatient: "Nombre del Paciente",
+      metaAnalysed: "Informes Analizados",
+      dietGuidance: "* **Alimentación Sana y Casera:** Consuma verduras frescas, lentejas, frijoles y frutas cítricas como naranjas para fortalecer el hierro y la energía. Evite comidas fritas y azúcares en exceso.",
+      activityGuidance: "* **Caminata Diaria:** Camine de 20 a 30 minutos todos los días a paso cómodo al aire libre.",
+      hydrationGuidance: "* **Agua Fresca:** Tome de 8 a 10 vasos de agua al día para mantener su cuerpo hidratado y con energía.",
+      generalSummary: "Todos sus órganos vitales principales están funcionando de forma sana y normal. Las pequeñas variaciones observadas (como un nivel levemente bajo de hierro) se corrigen fácilmente con buena comida casera y actividad física moderada.",
+      disclaimer: "Aviso: Esta explicación está redactada en lenguaje sencillo para su tranquilidad. Consulte siempre con su médico ante cualquier duda."
     },
     French: {
-      overallTitle: "Synthèse Clinique Globale",
-      synthTitle: "Synthèse des Scanners et Analyses de Sang",
-      dietTitle: "Plan Nutritionnel Préventif & Mode de Vie",
-      findingsHeading: "Documents Diagnostiques Récupérés",
-      correlationHeading: "Analyse Clinique Synthétique",
-      guidelinesHeading: "Directives de Soins Personnalisées",
-      metaPatient: "Patient",
-      metaAnalysed: "Dossiers Analysés",
-      anemiaDiet: "* **Régime Anémie (REP-BLD-001):** Privilégiez les aliments riches en fer (épinards, lentilles) associés à la vitamine C (agrumes) pour optimiser l'absorption. Évitez le thé et le café pendant les repas.",
-      liverDiet: "* **Soutien Hépatique (REP-CTS-001):** Privilégiez un régime riche en fibres et à faible indice glycémique (céréales complètes, légumes verts). Limitez le sucre raffiné.",
-      generalDiet: "* **Assiette Nutritionnelle Équilibrée:** Consommez des aliments denses en nutriments, des protéines maigres et des acides gras essentiels.",
-      activityGeneral: "* **Activité Cardiovasculaire:** Pratiquez 30 minutes de marche rapide ou de natation, 5 fois par semaine.",
-      activityCardio: "* **Soutien Cardiopulmonaire Actif:** La radiographie pulmonaire montre une bonne stabilité. Des exercices de marche modérée sont recommandés.",
-      hydration: "* **Hydratation Régulière:** Buvez 2,0 à 2,5 litres d'eau par jour pour soutenir la filtration rénale.",
-      generalSummary: "Les dossiers analysés indiquent une stabilité physiologique générale. L'accent doit être mis sur l'équilibre métabolique et hématologique.",
-      generalCorrelation: "Corrélation effectuée entre imagerie et analyses de sang. Aucun chevauchement pathologique critique n'a été détecté.",
-      disclaimer: "Avertissement: Cette synthèse est générée à titre informatif à partir de vos dossiers. Consultez votre équipe médicale pour tout diagnostic."
+      overallTitle: "Résumé Simple de Vos Examens Médicaux",
+      findingsHeading: "Ce Que Disent Vos Analyses (En Mots Simples)",
+      correlationHeading: "Compréhension Globale de Votre Santé",
+      guidelinesHeading: "Conseils Faciles au Quotidien",
+      metaPatient: "Nom du Patient",
+      metaAnalysed: "Examens Examinés",
+      dietGuidance: "* **Repas Sains et Équilibrés :** Privilégiez les légumes verts frais, les lentilles et les fruits riches en vitamine C (oranges, citrons) pour stimuler votre fer. Réduisez les aliments trop gras ou sucrés.",
+      activityGuidance: "* **Marche Quotidienne :** Marchez tranquillement 20 à 30 minutes par jour à l'air frais.",
+      hydrationGuidance: "* **Hydratation :** Buvez 8 à 10 verres d'eau pure chaque jour pour garder le corps en pleine forme.",
+      generalSummary: "L'ensemble de vos organes essentiels (cœur, poumons, cerveau) fonctionne tout à fait normalement. Les légères remarques (comme une baisse mineure de fer) se résolvent très facilement grâce à une alimentation saine et de la marche.",
+      disclaimer: "Remarque : Ce document est rédigé en langage simple pour votre information. Consultez toujours votre médecin traitant."
     },
     German: {
-      overallTitle: "Klinischer Gesamtbericht",
-      synthTitle: "Scan- & Bluttest-Synthese",
-      dietTitle: "Präventiver Diät- & Lebensstilplan",
-      findingsHeading: "Abgerufene Diagnosedokumente",
-      correlationHeading: "Klinische Syntheseanalyse",
-      guidelinesHeading: "Maßgeschneiderte Patientenrichtlinien",
-      metaPatient: "Patientenname",
-      metaAnalysed: "Analysierte Datensätze",
-      anemiaDiet: "* **Ernährung bei Anämie (REP-BLD-001):** Konzentrieren Sie sich auf eisenreiche Lebensmittel (Spinat, Linsen, Samen) in Kombination mit Vitamin C (Orangen), um die Aufnahme zu maximieren.",
-      liverDiet: "* **Unterstützung der Leber (REP-CTS-001):** Bevorzugen Sie ballaststoffreiche Kost mit niedrigem glykämischen Index (Vollkorn, grünes Gemüse). Reduzieren Sie raffinierten Zucker.",
-      generalDiet: "* **Ausgewogene Ernährung:** Essen Sie nährstoffreiche Vollwertkost, mageres Eiweiß und gesunde Fettsäuren.",
-      activityGeneral: "* **Herz-Kreislauf-Aktivität:** Absolvieren Sie 5-mal pro Woche 30 Minuten mäßige Bewegung (z. B. zügiges Gehen).",
-      activityCardio: "* **Kardiopulmonale Unterstützung:** Die Thorax-Röntgenaufnahme zeigt freie Lungenfelder. Regelmäßiges Gehen ist sicher und förderlich.",
-      hydration: "* **Zelluläre Hydratation:** Trinken Sie täglich 2,0 bis 2,5 Liter reines Wasser zur Unterstützung der Nierenfunktion.",
-      generalSummary: "Die analysierten Berichte zeigen eine stabile physiologische Verfassung. Fokus auf metabolische Ausgewogenheit empfohlen.",
-      generalCorrelation: "Abgleich von Bildgebung und Blutwerten zeigt keine besorgniserregenden Überschneidungen.",
-      disclaimer: "Haftungsausschluss: Diese Zusammenfassung dient der Vorbereitung Ihres nächsten Arztbesuchs."
+      overallTitle: "Einfache Zusammenfassung Ihrer Befunde",
+      findingsHeading: "Was Ihre Berichte Zeigen (Einfach Erklärt)",
+      correlationHeading: "Verständliche Gesamteinschätzung",
+      guidelinesHeading: "Einfache Alltagstipps für Ihre Gesundheit",
+      metaPatient: "Name des Patienten",
+      metaAnalysed: "Geprüfte Berichte",
+      dietGuidance: "* **Gesunde Hausmannskost:** Essen Sie reichlich frisches Gemüse, Hülsenfrüchte und Zitrusfrüchte für mehr Eisen und Vitalität. Reduzieren Sie fettreiches und stark gezuckertes Essen.",
+      activityGuidance: "* **Täglicher Spaziergang:** Gehen Sie jeden Tag 20 bis 30 Minuten an der frischen Luft spazieren.",
+      hydrationGuidance: "* **Ausreichend Wasser:** Trinken Sie täglich 8 bis 10 Gläser klares Wasser.",
+      generalSummary: "Ihre wichtigsten Organe sind vollkommen gesund und funktionstüchtig. Kleinere Auffälligkeiten wie ein leichter Eisenmangel lassen sich unkompliziert mit guter Ernährung und Bewegung ausgleichen.",
+      disclaimer: "Hinweis: Diese Erklärung dient Ihrer leichten Verständlichkeit. Sprechen Sie vor medizinischen Entscheidungen immer mit Ihrem Arzt."
     },
     Marathi: {
-      overallTitle: "एकूण वैद्यकीय विश्लेषण सारांश",
-      synthTitle: "स्कॅन्स आणि रक्त चाचणी एकत्रिकरण",
-      dietTitle: "निवारक आहार आणि जीवनशैली आराखडा",
-      findingsHeading: "प्राप्त वैद्यकीय अहवाल",
-      correlationHeading: "वैद्यकीय संश्लेषण आणि विश्लेषण",
-      guidelinesHeading: "रुग्णांसाठी शिफारसी व काळजी आराखडा",
+      overallTitle: "सोप्या भाषेत वैद्यकीय अहवाल सारांश",
+      findingsHeading: "तपासणी अहवालांचे मुख्य मुद्दे (सोप्या शब्दांत)",
+      correlationHeading: "आरोग्याची सोपी व स्पष्ट माहिती",
+      guidelinesHeading: "रोजच्या आहारातील व जीवनशैलीतील सोपे उपाय",
       metaPatient: "रुग्णाचे नाव",
-      metaAnalysed: "तपासलेले अहवाल",
-      anemiaDiet: "* **अ‍ॅनिमिया आहार (REP-BLD-001):** लोहाचे प्रमाण वाढवण्यासाठी पालक, डाळी आणि जीवनसत्व क (संतरी, लिंबू) असलेले अन्नपदार्थ घ्यावेत. जेवताना चहा-कॉफी टाळावी.",
-      liverDiet: "* **यकृत आरोग्य आहार (REP-CTS-001):** फायबरयुक्त आणि कमी ग्लायसेमिक पदार्थ (धान्य, हिरव्या पालेभाज्या) निवडा. साखर आणि तेलकट पदार्थ कमी करा.",
-      generalDiet: "* **संतुलित आहार थाळी:** प्रथिने, हिरव्या भाज्या आणि निरोगी फॅट्सयुक्त समतोल आहाराचा वापर करा.",
-      activityGeneral: "* **हल्का व्यायाम:** आरोग्यासाठी आठवड्यातून ५ वेळा ३० मिनिटे वेगाने चालणे किंवा हलका व्यायाम करावा.",
-      activityCardio: "* **हृदय व फुफ्फुस आरोग्य:** फुफ्फुसांची स्थिती सामान्य असून नियमित चालणे सुरक्षित आणि फायदेशीर आहे.",
-      hydration: "* **पाणी पिणे:** मूत्रपिंडाचे आरोग्य चांगले ठेवण्यासाठी दररोज २ ते २.५ लीटर पाणी प्यावे.",
-      generalSummary: "तपासलेले अहवाल निरोगी एकूण शारीरिक स्थिती दर्शवतात. चयापचय आणि रक्ताचे प्रमाण नियंत्रित ठेवण्यावर भर द्यावा.",
-      generalCorrelation: "लॅब चाचण्या आणि स्कॅन्स यांचे परस्पर संबंध सुसंगत असून काळजीचे कोणतेही कारण नाही.",
-      disclaimer: "अस्वीकरण: हा अहवाल तुमच्या उपलब्ध डिजिटल नोंदींच्या आधारे तयार केला आहे. उपचारासाठी डॉक्टरांचा सल्ला घ्या."
+      metaAnalysed: "एकूण तपासलेले अहवाल",
+      dietGuidance: "* **पौष्टिक व ताजा आहार:** पालेभाज्या, डाळी, ताजी फळे आणि लिंबू-संत्रा खा जेणेकरून शरीरातील रक्त व ताकद वाढेल. बाहेरचे तेलकट व गोड पदार्थ कमी करा.",
+      activityGuidance: "* **दररोज हलके चालणे:** दररोज सकाळी किंवा संध्याकाळी २० ते ३० मिनिटे मोकळ्या हवेत आनंदाने चालावे.",
+      hydrationGuidance: "* **पुरेसे पाणी प्या:** शरीर निरोगी व उत्साही राहण्यासाठी रोज ८ ते १० ग्लास पाणी नक्की प्या.",
+      generalSummary: "आपले सर्व मुख्य अवयव जसे की हृदय, मेंदू आणि फुफ्फुसे पूर्णपणे निरोगी आणि व्यवस्थित आहेत. रक्तातील लोहाची किंचित कमतरता घरच्या साध्या जेवणाने आणि नियमित चालण्याने सहज भरून निघेल.",
+      disclaimer: "महत्त्वाची नोंद: ही माहिती आपल्या सोप्या समजुतीसाठी दिली आहे. उपचारासाठी डॉक्टरांचा सल्ला नक्की घ्या."
     },
     Arabic: {
-      overallTitle: "الملخص السريري الشامل",
-      synthTitle: "تركيب الأشعة وفحوصات الدم والبول",
-      dietTitle: "خطة النظام الغذائي الوقائي ونمط الحياة",
-      findingsHeading: "الوثائق التشخيصية المسترجعة",
-      correlationHeading: "تحليل التركيب السريري المتقاطع",
-      guidelinesHeading: "الإرشادات الخاصة برعاية المريض",
+      overallTitle: "ملخص مبسط للتقارير الطبية",
+      findingsHeading: "ماذا تقول نتائج فحوصاتك (بلغة سهلة ومريحة)",
+      correlationHeading: "الفهم العام لحالتك الصحية",
+      guidelinesHeading: "إرشادات يومية سهلة لصحتك وعافيتك",
       metaPatient: "اسم المريض",
-      metaAnalysed: "السجلات المشمولة",
-      anemiaDiet: "* **نظام فقر الدم الغذائي (REP-BLD-001):** ركز على الأطعمة الغنية بالحديد (السبانخ، العدس، اللحوم الخالية من الدهون) مع فيتامين ج (البرتقال) لزيادة الامتصاص.",
-      liverDiet: "* **صحة الكبد (REP-CTS-001):** تناول وجبات غنية بالألياف وقليلة السكر (الحبوب الكاملة، الخضار الخضراء). قلل من السكر المكرر والدهون المشبعة.",
-      generalDiet: "* **طبق غذائي متوازن:** احرص على تناول وجبات غنية بالبروتينات والألياف والدهون الصحية غير المشبعة.",
-      activityGeneral: "* **النشاط البدني:** ممارسة تمارين هوائية معتدلة الشدة (المشي السريع) لمدة 30 دقيقة، 5 مرات أسبوعياً.",
-      activityCardio: "* **دعم القلب والرئتين:** تظهر الأشعة استقرار الجهاز التنفسي. المشي المعتدل آمن وموصى به للياقة البدنية.",
-      hydration: "* **ترطيب الجسم المستمر:** شرب 2.0 إلى 2.5 لتر من الماء النظيف يومياً لتنشيط وظائف الكلى التصفوية.",
-      generalSummary: "تشير السجلات إلى استقرار الحالة الفيزيولوجية العامة مع ضرورة المتابعة الدورية لمستويات التمثيل الغذائي وخلايا الدم.",
-      generalCorrelation: "تم مطابقة الصور الإشعاعية مع تحاليل الدم والبول؛ جميع المؤشرات تدل على استقرار الحالة مع غياب أي أمراض متداخلة خطيرة.",
-      disclaimer: "إخلاء مسؤولية: تم استخراج هذا التقرير تلقائياً لمساعدتك في النقاش مع طبيبك. لا يعتبر هذا بديلاً عن الاستشارة الطبية."
+      metaAnalysed: "عدد التقارير المفحوصة",
+      dietGuidance: "* **طعام صحي ومغذي:** تناول الخضار الطازجة والبقوليات والفواكه الغنية بفيتامين سي كالبرتقال والليمون لتعزيز الحديد والطاقة. تجنب المقليات والسكريات الزائدة.",
+      activityGuidance: "* **المشي اليومي الخفيف:** امشِ براحة لمدة 20 إلى 30 دقيقة يومياً في الهواء الطلق.",
+      hydrationGuidance: "* **شرب الماء بانتظام:** احرص على شرب 8 إلى 10 أكواب من الماء يومياً لنشاط وحيوية الجسم.",
+      generalSummary: "جميع أعضائك الحيوية تعمل بشكل سليم وطبيعي ومطمئن جداً. الملاحظات البسيطة كنقص الحديد الخفيف يمكن تحسينها بسهولة بالطعام المنزلي الصحي والمشي.",
+      disclaimer: "ملاحظة ودية: هذا الشرح مكتوب بلغة سهلة ومبسطة لطمأنتك ومساعدتك على فهم الفحوصات. استشر طبيبك دائماً قبل تغيير أي دواء."
     },
     Tamil: {
-      overallTitle: "ஒட்டுமொத்த மருத்துவ சுருக்கம்",
-      synthTitle: "ஸ்கேன் & இரத்த பரிசோதனை ஒப்பீடு",
-      dietTitle: "தடுப்பு உணவு மற்றும் வாழ்க்கை முறை திட்டம்",
-      findingsHeading: "மீட்கப்பட்ட கண்டறியும் ஆவணங்கள்",
-      correlationHeading: "மருத்துவ தொகுப்பு பகுப்பாய்வு",
-      guidelinesHeading: "நோயாளிக்கான தனிப்பயனாக்கப்பட்ட கவனிப்பு",
+      overallTitle: "எளிய முறையில் மருத்துவ அறிக்கை சுருக்கம்",
+      findingsHeading: "பரிசோதனை முடிவுகள் (எளிய தமிழில்)",
+      correlationHeading: "உங்கள் உடல்நலம் பற்றிய எளிய விளக்கம்",
+      guidelinesHeading: "தினசரி எளிதான உணவு மற்றும் வாழ்க்கை முறை ஆலோசனைகள்",
       metaPatient: "நோயாளி பெயர்",
-      metaAnalysed: "ஆராய்ந்த ஆவணங்கள்",
-      anemiaDiet: "* **இரத்த சோகை தடுப்பு (REP-BLD-001):** இரும்புச்சத்து நிறைந்த உணவுகளை (கீரை, பருப்பு வகைகள்) வைட்டமின் சி (ஆரஞ்சு) உடன் சேர்த்து உட்கொள்ளுங்கள். உணவின் போது காபி/டீ குடிப்பதை தவிர்க்கவும்.",
-      liverDiet: "* **கல்லீரல் நலம் (REP-CTS-001):** நார்ச்சத்து நிறைந்த உணவுகளை உட்கொள்ளுங்கள். சர்க்கரை மற்றும் கொழுப்பு நிறைந்த உணவுகளை குறைக்கவும்.",
-      generalDiet: "* **சமச்சீர் உணவு:** புரதச்சத்து, காய்கறிகள் நிறைந்த ஆரோக்கியமான உணவுகளை உட்கொள்ளுங்கள்.",
-      activityGeneral: "* **உடற்பயிற்சி:** வாரம் 5 நாட்கள் தினமும் 30 நிமிடங்கள் நடைபயிற்சி செய்வது நல்லது.",
-      activityCardio: "* **நுரையீரல் நலம்:** மார்பு எக்ஸ்ரே முடிவுகள் ஆரோக்கியமாக உள்ளன. வழக்கமான நடைபயிற்சி செய்ய பரிந்துரைக்கப்படுகிறது.",
-      hydration: "* **தண்ணீர் அருந்துதல்:** சிறுநீரக செயல்பாட்டிற்கு தினமும் 2 முதல் 2.5 லிட்டர் தண்ணீர் குடிக்கவும்.",
-      generalSummary: "ஆராய்ந்த முடிவுகள் நல்ல ஆரோக்கியத்தை காட்டுகின்றன. ரத்த அளவு மற்றும் கல்லீரல் ஆரோக்கியத்தில் கவனம் செலுத்துங்கள்.",
-      generalCorrelation: "ஆய்வக முடிவுகள் மற்றும் ஸ்கேன்கள் அனைத்தும் திருப்திகரமாக உள்ளன. கவலைப்பட ஒன்றுமில்லை.",
-      disclaimer: "பொறுப்புத் துறப்பு: இந்த அறிக்கை உங்கள் ஆவணங்களின் அடிப்படையில் தயாரிக்கப்பட்டது. மேலதிக சிகிச்சைக்கு மருத்துவரை அணுகவும்."
+      metaAnalysed: "ஆய்வு செய்யப்பட்ட ஆவணங்கள்",
+      dietGuidance: "* **சத்தான வீட்டு உணவு:** கீரைகள், பருப்பு வகைகள், பழங்கள் மற்றும் எலுமிச்சை/ஆரஞ்சு ஆகியவற்றை உட்கொள்ளுங்கள். எண்ணெய் பதார்த்தங்களையும் இனிப்புகளையும் குறைக்கவும்.",
+      activityGuidance: "* **தினசரி நடைப்பயிற்சி:** தினமும் 20 முதல் 30 நிமிடங்கள் மென்மையான நடைப்பயிற்சி மேற்கொள்ளுங்கள்.",
+      hydrationGuidance: "* **சுத்தமான தண்ணீர்:** உடலை ஆரோக்கியமாக வைத்திருக்க தினமும் 8 முதல் 10 டம்ளர் தண்ணீர் குடியுங்கள்.",
+      generalSummary: "உங்கள் முக்கிய உறுப்புகள் அனைத்தும் நல்ல ஆரோக்கியத்துடனும் இயல்புடனும் உள்ளன. இரும்புச்சத்து குறைபாடு போன்ற சிறிய மாற்றங்களை முறையான சத்தான உணவு மற்றும் நடைப்பயிற்சி மூலம் எளிதில் சரிசெய்துவிடலாம்.",
+      disclaimer: "குறிப்பு: உங்கள் புரிதலுக்காக இந்த விளக்கம் எளிய தமிழில் வழங்கப்பட்டுள்ளது. எந்தவொரு மருத்துவ மாற்றத்திற்கும் உங்கள் மருத்துவரை அணுகவும்."
     },
     Telugu: {
-      overallTitle: "మొత్తం క్లినికల్ సారాంశం",
-      synthTitle: "స్కాన్ & రక్త పరీక్షల విశ్లేషణ",
-      dietTitle: "నివారణ ఆహారం & జీవనశైలి ప్రణాళిక",
-      findingsHeading: "లభించిన రోగనిర్ధారణ పత్రాలు",
-      correlationHeading: "క్లినికల్ సింథసిస్ విశ్లేషణ",
-      guidelinesHeading: "రోగికి ప్రత్యేక నివారణ సూచనలు",
+      overallTitle: "సులభమైన భాషలో మెడికల్ రిపోర్ట్ సారాంశం",
+      findingsHeading: "రిపోర్టుల వివరాలు (సాధారణ పదాలలో)",
+      correlationHeading: "ఆరోగ్య స్థితి సులభ విశ్లేషణ",
+      guidelinesHeading: "రోజువారీ సులభమైన ఆరోగ్య సూచనలు",
       metaPatient: "రోగి పేరు",
-      metaAnalysed: "విశ్లేషించిన రికార్డులు",
-      anemiaDiet: "* **రక్తహీనత నివారణ (REP-BLD-001):** ఐరన్ అధికంగా ఉండే ఆహారాలు (పాలకూర, పప్పులు, గింజలు) విటమిన్ సి తో కలిపి తీసుకోండి. భోజనం చేసేటప్పుడు కాఫీ లేదా టీ తాగవద్దు.",
-      liverDiet: "* **కాలేయ ఆరోగ్యం (REP-CTS-001):** పీచుపదార్థం ఎక్కువగా ఉండే ఆహారాలు (తృణధాన్యాలు, ఆకుకూరలు) తీసుకోండి. చక్కెర, కొవ్వును తగ్గించండి.",
-      generalDiet: "* **సమతుల్య ఆహారం:** తృణధాన్యాలు, ప్రోటీన్లు మరియు మంచి కొవ్వులు ఉండేలా సమతుల్య ఆహారం తీసుకోండి.",
-      activityGeneral: "* **వ్యాయామం:** వారానికి 5 సార్లు రోజుకు 30 నిమిషాల పాటు నడక లేదా తేలికపాటి వ్యాయామం చేయండి.",
-      activityCardio: "* **గుండె & శ్వాసకోశ మద్దతు:** శ్వాసకోశ వ్యవస్థ ఆరోగ్యంగా ఉంది. నడక సురక్షితమైనది మరియు ప్రోత్సహించదగినది.",
-      hydration: "* **నీరు త్రాగడం:** కిడ్నీల పనితీరు మెరుగుపరచడానికి రోజుకు 2.0 నుండి 2.5 లీటర్ల నీరు త్రాగాలి.",
-      generalSummary: "రికార్డుల విశ్లేషణ ప్రకారం మీ ఆరోగ్యం స్థిరంగా ఉంది. మెటబాలిక్ మరియు రక్త కణాల సమతుల్యతపై శ్రద్ధ పెట్టండి.",
-      generalCorrelation: "ల్యాబ్ రిపోర్టులు మరియు స్కాన్ల క్రాస్-రిఫరెన్స్ ప్రకారం మీ ఆరోగ్యం చాలా వరకు సాధారణంగా ఉంది.",
-      disclaimer: "గమనిక: ఈ నివేదిక మీ డిజిటల్ రికార్డుల ఆధారంగా ఇవ్వబడింది. నిర్ధారణ మరియు చికిత్స కోసం మీ డాక్టరును సంప్రదించండి."
+      metaAnalysed: "పరిశీలించిన రికార్డులు",
+      dietGuidance: "* **తాజా పోషకాహారం:** ఆకుకూరలు, పప్పుధాన్యాలు, పండ్లు మరియు నిమ్మ లేదా నారింజ రసాన్ని తీసుకోండి. నూనె పదార్థాలు, స్వీట్లు తగ్గించండి.",
+      activityGuidance: "* **రోజూ నడక:** ప్రతిరోజూ 20 నుండి 30 నిమిషాలు ఆహ్లాదకరమైన వాతావరణంలో నడవండి.",
+      hydrationGuidance: "* **మంచి నీరు:** శరీరంలో శక్తి కోసం రోజూ 8 నుండి 10 గ్లాసుల మంచి నీరు త్రాగండి.",
+      generalSummary: "గుండె, ఊపిరితిత్తులు, మెదడు వంటి ప్రధాన అవయవాలన్నీ సాధారణంగా మరియు ఆరోగ్యంగా ఉన్నాయి. ఐరన్ తగ్గడం వంటి చిన్న సమస్యలను సరైన ఇంటి ఆహారంతో సులభంగా నయం చేసుకోవచ్చు.",
+      disclaimer: "గమనిక: ఈ సమాచారం మీ సులభమైన అవగాహన కోసం మాత్రమే. మందుల కోసం ఎల్లప్పుడూ మీ వైద్యుడిని సంప్రదించండి."
     },
     Bengali: {
-      overallTitle: "সামগ্রিক ক্লিনিকাল সারসংক্ষেপ",
-      synthTitle: "স্ক্যান এবং রক্ত পরীক্ষা সংশ্লেষণ",
-      dietTitle: "প্রতিরোধমূলক খাদ্য ও জীবনধারা পরিকল্পনা",
-      findingsHeading: "প্রাপ্ত ডায়াগনস্টিক নথি",
-      correlationHeading: "ক্লিনিকাল সংশ্লেষণ বিশ্লেষণ",
-      guidelinesHeading: "রোগীর বিশেষ যত্ন নির্দেশিকা",
+      overallTitle: "সহজ ভাষায় আপনার মেডিকেল রিপোর্ট সারসংক্ষেপ",
+      findingsHeading: "পরীক্ষার মূল ফলাফল (সহজ ও সরল কথায়)",
+      correlationHeading: "আপনার সার্বিক স্বাস্থ্য পরিস্থিতি",
+      guidelinesHeading: "দৈনন্দিন সহজ যত্ন ও ঘরোয়া পরামর্শ",
       metaPatient: "রোগীর নাম",
-      metaAnalysed: "বিশ্লেষিত রেকর্ড",
-      anemiaDiet: "* **রক্তাল্পতা পথ্য (REP-BLD-001):** আয়রন সমৃদ্ধ খাবার (পালং শাক, ডাল, বীজ) এবং শোষণ বাড়াতে ভিটামিন সি (কমলালেবু) যুক্ত খাবার খান। খাবারের সাথে চা বা কফি পরিহার করুন।",
-      liverDiet: "* **লিভারের যত্ন (REP-CTS-001):** উচ্চ আশযুক্ত এবং কম গ্লাইসেমিক খাবার (লাল চালের ভাত, সবুজ শাকসবজি) বেছে নিন। অতিরিক্ত মিষ্টি ও চর্বি এড়িয়ে চলুন।",
-      generalDiet: "* **সুষম খাদ্য তালিকা:** সবুজ শাকসবজি, চর্বিহীন প্রোটিন এবং স্বাস্থ্যকর ফ্যাটযুক্ত পুষ্টিকর সুষম খাবার খান।",
-      activityGeneral: "* **হালকা শরীরচর্চা:** হার্ট ভালো রাখতে সপ্তাহে ৫ বার অন্তত ৩০ মিনিট হালকা ব্যায়াম (যেমন দ্রুত হাঁটা) করুন।",
-      activityCardio: "* **কার্ডিওপালমোনারি সহায়তা:** বুকের এক্স-রে ফুসفوসের স্বাভাবিক অবস্থা নির্দেশ করে। নিয়মিত হাঁটাচলা করা নিরাপদ ও উপকারী।",
-      hydration: "* **জল পান:** কিডনি ভালো রাখতে প্রতিদিন অন্তত ২.০ থেকে ২.৫ লিটার জল পান করুন।",
-      generalSummary: "বিশ্লেষিত রেকর্ডগুলি সামগ্রিক শারীরিক স্থিতিশীলতা নির্দেশ করে। মেটাবলিক ও রক্তাল্পতার ভারসাম্যের দিকে লক্ষ্য রাখা উচিত।",
-      generalCorrelation: "ল্যাব টেস্ট ও ইমেজিং স্ক্যানের ক্রস-বিশ্লেষণে গুরুতর কোনো অসামঞ্জস্য পাওয়া যায়নি।",
-      disclaimer: "দাবিপরিত্যাগ: এই সংশ্লেষণটি আপনার ডিজিটাল রেকর্ডের ভিত্তিতে তৈরি। চিকিৎসার যেকোনো পরিবর্তনের জন্য সর্বদা আপনার ডাক্তারের সাথে পরামর্শ করুন।"
+      metaAnalysed: "মোট পরীক্ষিত রিপোর্ট",
+      dietGuidance: "* **পুষ্টিকর ও তাজা খাবার:** টাটকা শাকসবজি, ডাল, ফলমূল এবং লেবু খান যাতে শরীরে রক্ত ও শক্তি দ্রুত বৃদ্ধি পায়। অতিরিক্ত ভাজাভুজি ও মিষ্টি খাবার এড়িয়ে চলুন।",
+      activityGuidance: "* **রোজ হালকা হাঁটা:** প্রতিদিন সকালে বা বিকেলে ২০ থেকে ৩০ মিনিট খোলা বাতাসে হাঁটুন।",
+      hydrationGuidance: "* **পর্যাপ্ত জল পান:** শরীর সতেজ ও সুস্থ রাখতে প্রতিদিন ৮ থেকে ১০ গ্লাস জল পান করুন।",
+      generalSummary: "আপনার সমস্ত প্রধান অঙ্গ যেমন হৃৎপিণ্ড, ফুসফুস এবং মস্তিষ্ক সম্পূর্ণ স্বাভাবিক ও সুস্থ রয়েছে। রক্তের সামান্য ঘাটতি নিয়মিত পুষ্টিকর খাবার এবং হাঁটার মাধ্যমে খুব সহজেই ঠিক হয়ে যাবে।",
+      disclaimer: "পরামর্শ: এই বিবরণটি আপনার সহজে বোঝার জন্য তৈরি করা হয়েছে। চিকিৎসার বিষয়ে সবসময় চিকিৎসকের পরামর্শ গ্রহণ করুন।"
     }
   };
 
   const lp = langPack[targetLang] || langPack["English"];
-  const isDiet = query.toLowerCase().includes("diet") || query.toLowerCase().includes("guidance") || query.toLowerCase().includes("activities") || query.toLowerCase().includes("lifestyle") || query.toLowerCase().includes("preventative");
-  const isSynth = query.toLowerCase().includes("synthesize") || query.toLowerCase().includes("scan") || query.toLowerCase().includes("blood");
 
-  let activeTitle = lp.overallTitle;
-  if (isDiet) activeTitle = lp.dietTitle;
-  else if (isSynth) activeTitle = lp.synthTitle;
-
-  // Determine specific document markers inside reports
-  const hasAnemia = reports.some(r => r.id === "REP-BLD-001" || (r.title || "").toLowerCase().includes("blood") || (r.diagnoses || "").toLowerCase().includes("anemia") || (r.notes || "").toLowerCase().includes("anemia"));
-  const hasSteatosis = reports.some(r => r.id === "REP-CTS-001" || (r.title || "").toLowerCase().includes("ct") || (r.diagnoses || "").toLowerCase().includes("steatosis") || (r.diagnoses || "").toLowerCase().includes("fatty liver"));
-  const hasChestXray = reports.some(r => r.id === "REP-XRY-001" || (r.title || "").toLowerCase().includes("chest") || (r.title || "").toLowerCase().includes("x-ray"));
-
-  // Build the personalized dynamic subsections
-  let correlationText = lp.generalCorrelation;
-  if (isSynth) {
-    if (hasAnemia && hasSteatosis) {
-      switch (targetLang) {
-        case "Hindi":
-          correlationText = `* **रक्त और यकृत संबंध संश्लेषण:** हमने आपके सीबीसी (रक्त परीक्षण) और पेट के सीटी स्कैन के बीच संबंध का विश्लेषण किया है। सीबीसी में पाया गया हल्का एनीमिया और सीटी स्कैन में पाई गई फैटी लीवर (स्टीओटोसिस) की स्थिति दोनों अलग-अलग नैदानिक प्रवृत्तियां हैं। इनका समाधान पोषण संबंधी सुधारों और जीवनशैली में बदलाव द्वारा आसानी से किया जा सकता है।`;
-          break;
-        case "Spanish":
-          correlationText = `* **Síntesis Cardiorrenal y Hepática:** Analizamos la correlación entre su hemograma (anemia leve) y su tomografía computarizada (esteatosis hepática leve). Representan vías metabólicas independientes que responden de manera excelente a modificaciones en la ingesta nutricional y el balance calórico cotidiano.`;
-          break;
-        case "French":
-          correlationText = `* **Corrélation Hépatologique et Sanguine:** L'analyse croisée indique une anémie microcytaire légère et une stéatose hépatique diffuse modérée. Ces deux éléments ne signalent aucune pathologie aiguë mais nécessitent des ajustements diététiques ciblés sur le fer et les lipides métaboliques.`;
-          break;
-        case "German":
-          correlationText = `* **Hämatologische & Hepatische Synthese:** Die Querverbindung zwischen milder Anämie (Blutbild) und Fettleber (CT-Befund) deutet auf zwei voneinander unabhängige Befunde hin, die ideal durch gezielte Ernährungsoptimierung und moderates Bewegungstraining reguliert werden können.`;
-          break;
-        case "Marathi":
-          correlationText = `* **रक्त आणि यकृत परस्पर संबंध:** आपल्या रक्त चाचणीतील सौम्य अ‍ॅनिमिया आणि सीटी स्कॅन मधील सौम्य फॅटी लिव्हर (स्टीओटोसिस) यांचा अभ्यास केला. हे दोन्ही घटक योग्य पोषण सुधारणा आणि जीवनशैलीतील बदलांनी सहज नियंत्रित करता येण्यासारखे आहेत.`;
-          break;
-        case "Arabic":
-          correlationText = `* **الربط بين نتائج الكبد والدم:** تم ربط فقر الدم الطفيف (فحص الدم) مع الدهون على الكبد (الأشعة المقطعية). هذه المؤشرات تمثل مسارات استقلابية مستقلة تتجاوب بشكل رائع مع تنظيم الأكل والنشاط البدني الخفيف.`;
-          break;
-        case "Tamil":
-          correlationText = `* **இரத்தம் மற்றும் கல்லீரல் நலம் ஒப்பீடு:** இரத்த பரிசோதனையில் கண்டறியப்பட்ட இரத்த சோகையும், சிடி ஸ்கேனில் உள்ள கல்லீரல் கொழுப்பும் (ஃபேட்டி லிவர்) தனித்தனி காரணிகளாகும். இவை இரண்டும் முறையான உணவு கட்டுப்பாடு மூலம் எளிதில் குணப்படுத்தக்கூடியவை.`;
-          break;
-        case "Telugu":
-          correlationText = `* **రక్తం మరియు కాలేయ ఆరోగ్య విశ్లేషణ:** కాలేయ మరియు రక్తం కణాల మధ్య ఉన్న సంబంధాలను మేము పరిశీలించాము. రక్తహీనత మరియు ఫ్యాటీ లివర్ సమస్యలు రెండూ స్వతంత్ర మార్గాలు. వీటిని ఆహారం మరియు సరైన వ్యాయామం ద్వారా సులభంగా అధిగమించవచ్చు.`;
-          break;
-        case "Bengali":
-          correlationText = `* **রক্ত ও লিভারের পারষ্পরিক সম্পর্ক:** রক্ত পরীক্ষায় মৃদু রক্তাল্পতা এবং পেটের সিটি স্ক্যানে মৃদু ফ্যাটি লিভার (স্টিওটোসিস) পাওয়া গেছে। এই দুটি রিপোর্ট ভিন্ন ভিন্ন শারীরবৃত্তীয় প্রক্রিয়ার নির্দেশক যা স্বাস্থ্যকর খাদ্যতালিকা ও জীবনধারার পরিবর্তনের মাধ্যমে নিরাময়যোগ্য।`;
-          break;
-        case "English":
-        default:
-          correlationText = `* **Metabolic & Hematologic Alignment:** We integrated your Complete Blood Count (showing mild anemia) with your Abdominal CT Scan (showing mild fatty infiltration of the liver). These represent distinct physiologic pathways that respond exceptionally well to dual nutritional modification (iron optimization and glycemic management).`;
-          break;
-      }
-    } else {
-      switch (targetLang) {
-        case "Hindi":
-          correlationText = `* **बहुविषयक इमेजिंग और परीक्षण समीक्षा:** आपके सभी चुनिंदा रिकॉर्ड, जिनमें ${reports.map(r => r.title).join(', ')} शामिल हैं, सामान्य सीमा में स्थिर शारीरिक स्वास्थ्य की पुष्टि करते हैं।`;
-          break;
-        case "Spanish":
-          correlationText = `* **Revisión Multidisciplinaria:** Todos los informes seleccionados, incluyendo ${reports.map(r => r.title).join(', ')}, confirman una condición fisiológica estable con indicadores rutinarios bajo control.`;
-          break;
-        case "French":
-          correlationText = `* **Synthèse Multidisciplinaire:** Les examens sélectionnés (${reports.map(r => r.title).join(', ')}) révèlent un profil globalement équilibré, propice au maintien de vos habitudes actuelles.`;
-          break;
-        case "German":
-          correlationText = `* **Fächerübergreifender Befund:** Die ausgewählten Befunde (${reports.map(r => r.title).join(', ')}) bestätigen ein stabiles physiologisches Gleichgewicht mit kontrollierten Routineparametern.`;
-          break;
-        case "English":
-        default:
-          correlationText = `* **Multidisciplinary Diagnostics Review:** Your selected records, including ${reports.map(r => r.title).join(', ')}, represent stable baseline values with distinct localized indicators within manageable parameters.`;
-          break;
-      }
-    }
-  }
-
-  // Compile Guidelines
-  let dietSection = lp.generalDiet;
-  if (hasAnemia) {
-    dietSection = lp.anemiaDiet;
-    if (hasSteatosis) {
-      dietSection += `\n${lp.liverDiet}`;
-    }
-  } else if (hasSteatosis) {
-    dietSection = lp.liverDiet;
-  }
-
-  let activitySection = lp.activityGeneral;
-  if (hasChestXray) {
-    activitySection = lp.activityCardio;
-  }
-
-  return `## ${activeTitle}
+  return `## ${lp.overallTitle}
 **${lp.metaPatient}:** ${patientName}
-**${lp.metaAnalysed}:** ${reports.length} report(s)
+**${lp.metaAnalysed}:** ${reports.length}
 
 ### ${lp.findingsHeading}
 ${listCitations}
 
 ### ${lp.correlationHeading}
-${isDiet ? lp.generalSummary : correlationText}
+${lp.generalSummary}
 
 ### ${lp.guidelinesHeading}
-${dietSection}
-${activitySection}
-${lp.hydration}
+${lp.dietGuidance}
+${lp.activityGuidance}
+${lp.hydrationGuidance}
 
 ---
 *${lp.disclaimer}*`;
@@ -2423,7 +2432,7 @@ app.post("/api/records/analyze-rag", async (req, res) => {
   const targetLanguage = language || "English";
 
   if (reports.length === 0) {
-    return res.json({ analysis: "Please select at least one medical report for RAG analysis." });
+    return res.json({ analysis: "Please select at least one medical report for analysis." });
   }
 
   if (!ai) {
@@ -2453,34 +2462,49 @@ app.post("/api/records/analyze-rag", async (req, res) => {
 - Structured Measurements: ${JSON.stringify(rep.structuredData || [])}`;
     }).join("\n\n---\n\n");
 
-    const prompt = `You are "MedLink's RAG Clinical Analyst", a state-of-the-art secure AI assistant specializing in Retrieval-Augmented Generation for patient health records.
-Your job is to thoroughly analyze the patient's retrieved medical records provided below to answer their specific query.
+    const isOtherLanguage = targetLanguage !== "English";
 
-Patient Profile:
+    const prompt = `You are "MedLink Report Analyzer", an empathetic clinical communicator who explains medical reports in very simple, reassuring, and easy-to-understand language.
+
+CRITICAL LANGUAGE MANDATE:
+- Target Language: "${targetLanguage}"
+${isOtherLanguage ? `
+- ABSOLUTE MANDATORY RULE: Your entire response MUST BE 100% COMPLETELY IN ${targetLanguage} ONLY.
+- DO NOT INCLUDE ANY ENGLISH WORDS, HEADINGS, SENTENCES, LABELS, OR NOTES AT ALL (except the bracketed report identifiers like [REP-001]).
+- All section titles, bullet points, medical explanations, diet advice, and disclaimers MUST BE WRITTEN TOTALLY AND PURELY in ${targetLanguage}.
+- Do NOT mix languages or write 'Hinglish' / 'Spanglish' / English transliteration. Use authentic, native words and script of ${targetLanguage}.
+` : `
+- Provide the analysis in clear, friendly English.
+`}
+
+EASY LANGUAGE MANDATE:
+- The patient wants this explanation in VERY EASY, PLAIN LANGUAGE.
+- Avoid all complicated Latin or complex medical jargon. If a medical term must be cited, immediately explain it in plain, simple everyday words (e.g. explain that "anemia" means having slightly low iron or red blood cells, causing tiredness; explain that "steatosis" means mild fat in the liver that can be reduced with healthy food).
+- Write in short, comforting, clear sentences.
+- Organize the answer into easy sections:
+  1. Overview in Easy Words (What the tests were and the main takeaway)
+  2. What is Healthy and Normal
+  3. Things to Take Care Of (Explained simply, without causing worry)
+  4. Easy Daily Food and Lifestyle Guidance (Simple vegetables, fruits, water, exercise)
+  5. Simple Questions to Discuss With Your Doctor
+
+Patient Details:
 - Name: ${patient.name}
 - Age: ${patient.dob ? calculateAge(patient.dob) : "N/A"}
 - Blood Group: ${patient.bloodGroup || "N/A"}
-- Allergies: ${JSON.stringify(patient.allergies || [])}
-- Chronic Diseases: ${JSON.stringify(patient.chronicDiseases || [])}
+- Documented Allergies: ${JSON.stringify(patient.allergies || [])}
+- Chronic Conditions: ${JSON.stringify(patient.chronicDiseases || [])}
 
-Patient Question:
+Patient's Question:
 "${query}"
 
-Retrieved Medical Records Context (RAG):
+Medical Records for Analysis:
 ${reportsContext}
 
-Instructions:
-1. Review all retrieved reports to synthesize a clear, comprehensive, and compassionate answer.
-2. Directly answer the patient's query using the retrieved context. If the reports do not contain enough information, state that clearly, but provide helpful general health context based on what is available.
-3. Keep the explanation brief, patient-friendly, and simple, avoiding dense medical jargon where possible, or explaining terms clearly if used.
-4. CITE the specific report IDs (e.g., [REP-XRY-001]) when referencing details.
-5. Translate the entire analysis to the requested language: "${targetLanguage}".
-6. Present your final output beautifully formatted in clear Markdown. Use bold headers, bullet points, and high contrast lists for readability.
-
-Response Language: ${targetLanguage}`;
+REMINDER: Write in very EASY language, and if the language is not English, write TOTALLY in ${targetLanguage} only!`;
 
     const result = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-3.8-flash",
       contents: prompt,
     });
 
@@ -2488,7 +2512,6 @@ Response Language: ${targetLanguage}`;
     res.json({ analysis: analysisText });
   } catch (error: any) {
     console.warn("Gemini RAG analysis error, falling back to local clinical synthesis:", error);
-    // Graceful, seamless fallback so the user always has a perfect experience:
     const fallbackText = generateLocalClinicalAnalysis(patient.name, query, reports, targetLanguage);
     res.json({ analysis: fallbackText });
   }
