@@ -1,0 +1,605 @@
+{
+  "patients": {
+    "MED-00000125": {
+      "id": "MED-00000125",
+      "name": "Jane Doe",
+      "phone": "9876543210",
+      "aadhaar": "5555-4444-3333",
+      "dob": "1990-05-15",
+      "bloodGroup": "O+",
+      "allergies": [
+        "Penicillin",
+        "Sulfonamides",
+        "Peanuts"
+      ],
+      "chronicDiseases": [
+        "Type 2 Diabetes",
+        "Asthma"
+      ],
+      "emergencyContacts": [
+        {
+          "name": "John Doe",
+          "relation": "Spouse",
+          "phone": "9876543211"
+        }
+      ],
+      "avatar": "JD",
+      "parentName": "Robert Doe",
+      "gender": "Female",
+      "weight": "62 kg",
+      "height": "168 cm",
+      "visitedDates": [
+        "2023-04-12",
+        "2023-08-20",
+        "2024-02-15",
+        "2024-06-10",
+        "2025-01-05",
+        "2025-09-14"
+      ],
+      "upcomingVisitDate": "2026-07-20",
+      "visitNotifications": [
+        "Reminder set for consultation on 2026-07-20 at 02:00 PM"
+      ],
+      "phoneVerified": true
+    },
+    "MED-0000127": {
+      "id": "MED-0000127",
+      "name": "chetna",
+      "phone": "7056144602",
+      "aadhaar": "5555-4444-1111",
+      "passport": "",
+      "dob": "2006-05-23",
+      "bloodGroup": "AB+",
+      "allergies": [],
+      "chronicDiseases": [],
+      "emergencyContacts": [],
+      "avatar": "C"
+    },
+    "MED-0000128": {
+      "id": "MED-0000128",
+      "name": "Priya Sharma",
+      "phone": "9822334455",
+      "email": "priya@example.com",
+      "aadhaar": "",
+      "passport": "",
+      "dob": "1998-04-12",
+      "bloodGroup": "O+",
+      "allergies": [],
+      "chronicDiseases": [],
+      "emergencyContacts": [],
+      "phoneVerified": true,
+      "emailVerified": true,
+      "registrationDate": "2026-10-13T17:49:06.467Z",
+      "avatar": "PS"
+    },
+    "MED-0000129": {
+      "id": "MED-0000129",
+      "name": "Alex Mercer",
+      "phone": "9811223344",
+      "email": "alex.mercer@health.test",
+      "aadhaar": "9876-5432-1098",
+      "passport": "",
+      "dob": "1988-11-20",
+      "bloodGroup": "AB+",
+      "allergies": [],
+      "chronicDiseases": [],
+      "emergencyContacts": [],
+      "phoneVerified": true,
+      "emailVerified": true,
+      "registrationDate": "2026-10-24T07:28:33.170Z",
+      "avatar": "AM"
+    },
+    "MED-FBTEST": {
+      "id": "MED-FBTEST",
+      "firebaseUid": "fb-test-user-991",
+      "name": "Chetna Sharma",
+      "phone": "+919988776655",
+      "email": "chetna@healthcloud.org",
+      "aadhaar": "",
+      "passport": "",
+      "dob": "1995-01-01",
+      "bloodGroup": "O+",
+      "allergies": [],
+      "chronicDiseases": [],
+      "emergencyContacts": [],
+      "avatar": "CS",
+      "avatarUrl": "",
+      "phoneVerified": true,
+      "emailVerified": true,
+      "registrationDate": "2026-10-24T07:47:42.424Z"
+    }
+  },
+  "hospitals": [
+    {
+      "id": "HOSP-01",
+      "name": "Metro General Hospital",
+      "location": "New York, NY",
+      "contact": "+1 (555) 019-2834",
+      "licenseNo": "H-9872",
+      "approved": true
+    },
+    {
+      "id": "HOSP-02",
+      "name": "City Wellness Clinic",
+      "location": "San Francisco, CA",
+      "contact": "+1 (555) 012-3456",
+      "licenseNo": "H-1234",
+      "approved": true
+    },
+    {
+      "id": "HOSP-03",
+      "name": "Apollo Prime Healthcare",
+      "location": "Boston, MA",
+      "contact": "+1 (555) 015-6789",
+      "licenseNo": "H-5678",
+      "approved": true
+    },
+    {
+      "id": "HOSP-04",
+      "name": "St. Jude Medical Center",
+      "location": "Chicago, IL",
+      "contact": "+1 (555) 011-2233",
+      "licenseNo": "H-1122",
+      "approved": false
+    }
+  ],
+  "doctors": [
+    {
+      "id": "DOC-01",
+      "name": "Dr. Sarah Connor",
+      "hospitalId": "HOSP-01",
+      "hospitalName": "Metro General Hospital",
+      "specialty": "Cardiology",
+      "licenseNo": "D-5511",
+      "verified": true
+    },
+    {
+      "id": "DOC-02",
+      "name": "Dr. Rajesh Koothrapali",
+      "hospitalId": "HOSP-02",
+      "hospitalName": "City Wellness Clinic",
+      "specialty": "General Medicine",
+      "licenseNo": "D-8822",
+      "verified": true
+    },
+    {
+      "id": "DOC-03",
+      "name": "Dr. Gregory House",
+      "hospitalId": "HOSP-03",
+      "hospitalName": "Apollo Prime Healthcare",
+      "specialty": "Internal Medicine",
+      "licenseNo": "D-3344",
+      "verified": true
+    },
+    {
+      "id": "DOC-04",
+      "name": "Dr. John Watson",
+      "hospitalId": "HOSP-01",
+      "hospitalName": "Metro General Hospital",
+      "specialty": "Pulmonology",
+      "licenseNo": "D-1100",
+      "verified": false
+    }
+  ],
+  "records": [
+    {
+      "id": "REC-101",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-01",
+      "hospitalName": "Metro General Hospital",
+      "date": "2023-04-12",
+      "type": "Blood Test",
+      "title": "Complete Blood Count & Glucose",
+      "diagnoses": "Mild Iron Deficiency, Pre-diabetes",
+      "notes": "Fasting glucose is slightly elevated at 108 mg/dL. HbA1c is 5.8%. Iron levels are lower than normal. Recommending dietary modifications and iron supplements.",
+      "doctorName": "Dr. Sarah Connor",
+      "medicines": [
+        {
+          "name": "Ferrous Sulfate",
+          "dosage": "325mg",
+          "frequency": "Once daily",
+          "duration": "3 months"
+        }
+      ],
+      "isPersonalUpload": false,
+      "aiSummary": "**Clinical Analysis Summary**\n\n* **Primary Finding**: Patient exhibits mild iron-deficiency anemia and early markers for pre-diabetes (fasting glucose at 108 mg/dL).\n* **Required Actions**: Avoid refined sugars and simple carbohydrates. Supplement iron intake with vitamin C to boost absorption.\n* **Medication Advice**: Take Ferrous Sulfate once daily on an empty stomach unless gastrointestinal upset occurs."
+    },
+    {
+      "id": "REC-102",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-01",
+      "hospitalName": "Metro General Hospital",
+      "date": "2023-08-20",
+      "type": "MRI",
+      "title": "Brain MRI Scan",
+      "diagnoses": "Stress-Induced Tension Headaches",
+      "notes": "MRI of the brain shows no acute intracranial pathology. No evidence of tumors, aneurysm, or hemorrhage. Ventricles and sulci normal. Headache etiology likely benign, related to stress and tension.",
+      "doctorName": "Dr. Sarah Connor",
+      "isPersonalUpload": false,
+      "aiSummary": "**Brain MRI Scan Summary**\n\n* **Structure Scan**: Completely clear. Solid structures, ventricular system, and vascular markers are perfectly healthy.\n* **Conclusion**: No pathological cause for migraines. Classified as stress tension headaches.\n* **Advice**: Engage in relaxation techniques, maintain consistent sleep schedules, and track headache triggers."
+    },
+    {
+      "id": "REC-103",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-03",
+      "hospitalName": "Apollo Prime Healthcare",
+      "date": "2024-02-15",
+      "type": "ECG",
+      "title": "12-Lead Electrocardiogram",
+      "diagnoses": "Sinus Bradycardia (Physiological)",
+      "notes": "ECG shows a resting heart rate of 52 bpm, regular sinus rhythm. PR interval is 160ms. QRS complex is 88ms. No ST-segment elevation, depression or ischemic changes. Finding is consistent with cardiovascular fitness.",
+      "doctorName": "Dr. Gregory House",
+      "isPersonalUpload": false,
+      "aiSummary": "**ECG Report Analysis**\n\n* **Heart Rhythm**: Normal sinus rhythm, operating at 52 beats per minute (slow/bradycardia).\n* **Assessment**: No pathological blocks. Heart is structurally efficient and well-conditioned.\n* **Advice**: Normal variant, no intervention required unless accompanied by dizziness or syncope."
+    },
+    {
+      "id": "REC-104",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-03",
+      "hospitalName": "Apollo Prime Healthcare",
+      "date": "2024-06-10",
+      "type": "Discharge Summary",
+      "title": "Laparoscopic Appendectomy Post-Op",
+      "diagnoses": "Acute Appendicitis (Resolved)",
+      "notes": "Patient presented with acute right lower quadrant abdominal pain, fever, and leukocytosis. Laparoscopic appendectomy was successfully performed. Appendix was inflamed but intact. Post-op course was uneventful. Discharged stable.",
+      "doctorName": "Dr. Gregory House",
+      "medicines": [
+        {
+          "name": "Amoxicillin",
+          "dosage": "500mg",
+          "frequency": "Three times daily",
+          "duration": "7 days"
+        },
+        {
+          "name": "Ibuprofen",
+          "dosage": "400mg",
+          "frequency": "Every 6 hours as needed for pain",
+          "duration": "5 days"
+        }
+      ],
+      "isPersonalUpload": false,
+      "aiSummary": "**Discharge Summary Appendectomy**\n\n* **Surgical Outcome**: Appendix was fully removed cleanly before rupture. Patient is cured of appendicitis.\n* **Recovery Guidance**: Rest for 2 weeks. Avoid lifting heavy objects. Keep abdominal incision sites clean and dry.\n* **Medications**: Finish the entire course of Amoxicillin to prevent infection, use Ibuprofen only as needed for discomfort."
+    },
+    {
+      "id": "REC-105",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-02",
+      "hospitalName": "City Wellness Clinic",
+      "date": "2025-01-05",
+      "type": "Blood Test",
+      "title": "Fasting Blood Sugar & HbA1c",
+      "diagnoses": "Type 2 Diabetes (Well-Controlled)",
+      "notes": "Fasting blood sugar is 112 mg/dL. HbA1c is 6.4%, showing excellent long-term glycemic control. Recommending continuing current dosage of Metformin, dietary control, and daily walking.",
+      "doctorName": "Dr. Rajesh Koothrapali",
+      "medicines": [
+        {
+          "name": "Metformin",
+          "dosage": "500mg",
+          "frequency": "Twice daily with meals",
+          "duration": "6 months"
+        }
+      ],
+      "isPersonalUpload": false,
+      "aiSummary": "**Glycemic Control Assessment**\n\n* **Condition Status**: HbA1c at 6.4% confirms successful containment of Type 2 Diabetes within target parameters.\n* **Lifestyle Guide**: Continue the low-glycemic index diet and aim for 30 minutes of aerobic exercise daily.\n* **Therapy**: Maintain Metformin 500mg morning and night with food to minimize gastric sensitivity."
+    },
+    {
+      "id": "REC-106",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-02",
+      "hospitalName": "City Wellness Clinic",
+      "date": "2025-09-14",
+      "type": "CT Scan",
+      "title": "Abdomen & Pelvis CT Scan",
+      "diagnoses": "Normal Post-Surgical Abdominal Exam",
+      "notes": "CT scan of abdomen and pelvis with contrast. Appendix surgically absent. No abscess, residual fluid collections, or signs of surgical complications. Hepatic, renal, and splenic parenchyma appear unremarkable.",
+      "doctorName": "Dr. Rajesh Koothrapali",
+      "isPersonalUpload": false,
+      "aiSummary": "**Abdominal CT Scan Summary**\n\n* **Status**: Confirms normal healed postoperative abdominal cavity with zero signs of appendectomy complications.\n* **Organs**: Liver, kidneys, and spleen are fully normal and healthy.\n* **Action**: Routine annual physical follow-up."
+    }
+  ],
+  "consentRequests": [
+    {
+      "id": "CON-001",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-01",
+      "hospitalName": "Metro General Hospital",
+      "doctorName": "Dr. Sarah Connor",
+      "status": "approved",
+      "timestamp": "2026-07-01T10:00:00Z",
+      "purpose": "Regular clinical review & cardiology tracking"
+    },
+    {
+      "id": "CON-002",
+      "patientId": "MED-00000125",
+      "hospitalId": "HOSP-02",
+      "hospitalName": "City Wellness Clinic",
+      "doctorName": "Dr. Rajesh Koothrapali",
+      "status": "approved",
+      "timestamp": "2026-07-02T14:30:00Z",
+      "purpose": "Diabetes glycemic index review"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "LOG-001",
+      "patientId": "MED-00000125",
+      "actorName": "Dr. Sarah Connor (Metro General)",
+      "actorRole": "Doctor",
+      "action": "Accessed patient medical history & chronic allergies data",
+      "timestamp": "2026-07-04T09:12:00Z"
+    },
+    {
+      "id": "LOG-002",
+      "patientId": "MED-00000125",
+      "actorName": "Dr. Rajesh Koothrapali (City Wellness)",
+      "actorRole": "Doctor",
+      "action": "Uploaded new Fasting Blood Sugar lab report",
+      "timestamp": "2026-07-05T11:45:00Z"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "APP-001",
+      "patientId": "MED-00000125",
+      "patientName": "Jane Doe",
+      "doctorName": "Dr. Rajesh Koothrapali",
+      "hospitalName": "City Wellness Clinic",
+      "date": "2026-07-15",
+      "time": "10:30 AM",
+      "status": "Scheduled"
+    },
+    {
+      "id": "APP-002",
+      "patientId": "MED-00000125",
+      "patientName": "Jane Doe",
+      "doctorName": "Dr. Sarah Connor",
+      "hospitalName": "Metro General Hospital",
+      "date": "2026-07-20",
+      "time": "02:00 PM",
+      "status": "Scheduled"
+    }
+  ],
+  "reminders": [
+    {
+      "id": "REM-001",
+      "patientId": "MED-00000125",
+      "medicineName": "Metformin 500mg",
+      "time": "08:00 AM",
+      "frequency": "With Breakfast",
+      "active": true
+    },
+    {
+      "id": "REM-002",
+      "patientId": "MED-00000125",
+      "medicineName": "Metformin 500mg",
+      "time": "08:00 PM",
+      "frequency": "With Dinner",
+      "active": true
+    },
+    {
+      "id": "REM-003",
+      "patientId": "MED-00000125",
+      "medicineName": "Albuterol Inhaler",
+      "time": "07:00 AM",
+      "frequency": "2 puffs morning",
+      "active": true
+    }
+  ],
+  "notifications": {
+    "MED-00000125": [
+      {
+        "id": "NOT-001",
+        "title": "Consent Approved",
+        "message": "You approved data access to City Wellness Clinic.",
+        "date": "2026-07-02T14:30:00Z",
+        "read": false
+      }
+    ],
+    "MED-0000127": [
+      {
+        "id": "NOT-REG",
+        "title": "Welcome to MedLink!",
+        "message": "Your unique Medical ID is MED-0000127. Use this ID across any healthcare provider.",
+        "date": "2026-10-13T17:40:08.912Z",
+        "read": false
+      }
+    ],
+    "MED-0000128": [
+      {
+        "id": "NOT-REG",
+        "title": "Welcome to MedLink!",
+        "message": "Your verified unique Medical ID is MED-0000128. Use this ID across any healthcare provider.",
+        "date": "2026-10-13T17:49:06.467Z",
+        "read": false
+      }
+    ],
+    "MED-0000129": [
+      {
+        "id": "NOT-REG",
+        "title": "Welcome to MedLink!",
+        "message": "Your verified unique Medical ID is MED-0000129. Use this ID across any healthcare provider.",
+        "date": "2026-10-24T07:28:33.170Z",
+        "read": false
+      }
+    ],
+    "MED-FBTEST": [
+      {
+        "id": "NOT-FB-WELCOME",
+        "title": "Welcome to MedLink Health Cloud!",
+        "message": "Your verified unique Medical ID is MED-FBTEST, authenticated via Firebase Secure Auth.",
+        "date": "2026-10-24T07:47:42.424Z",
+        "read": false
+      }
+    ]
+  },
+  "securityLogs": [
+    {
+      "id": "SEC-001",
+      "timestamp": "2026-07-06T09:00:00Z",
+      "event": "MFA Authentication Successful",
+      "ip": "192.168.1.102",
+      "status": "PASS",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-002",
+      "timestamp": "2026-07-06T10:15:00Z",
+      "event": "JWT Session Initiated for MED-00000125",
+      "ip": "192.168.1.102",
+      "status": "PASS",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-003",
+      "timestamp": "2026-07-06T11:00:00Z",
+      "event": "Database Ledger End-to-End Encryption Integrity Verified",
+      "ip": "SYSTEM",
+      "status": "SECURE",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1783425179431",
+      "timestamp": "2026-07-07T11:52:59.431Z",
+      "event": "OTP generated for patient MED-00000125",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1783425187740",
+      "timestamp": "2026-07-07T11:53:07.740Z",
+      "event": "MFA verification passed for MED-00000125",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1791913208912",
+      "timestamp": "2026-10-13T17:40:08.912Z",
+      "event": "New digital identity created: MED-0000127",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1791913215539",
+      "timestamp": "2026-10-13T17:40:15.539Z",
+      "event": "OTP generated for patient MED-0000127",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1791913629370",
+      "timestamp": "2026-10-13T17:47:09.370Z",
+      "event": "Registration OTP (850932) dispatched to +9811223344 and alex.morgan@example.com [Registration ID: REG-1791913623244-721]",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1791913737222",
+      "timestamp": "2026-10-13T17:48:57.222Z",
+      "event": "Registration OTP (867927) dispatched to +9822334455 and priya@example.com [Registration ID: REG-1791913734713-2842]",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1791913746467",
+      "timestamp": "2026-10-13T17:49:06.467Z",
+      "event": "New digital identity verified and created: MED-0000128 for Priya Sharma (9822334455)",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1791913754397",
+      "timestamp": "2026-10-13T17:49:14.397Z",
+      "event": "Actual MFA OTP (682702) dispatched to patient MED-0000128 (9822334455) and priya@example.com",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1791913757893",
+      "timestamp": "2026-10-13T17:49:17.893Z",
+      "event": "MFA verification passed for MED-0000128",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1792826789148",
+      "timestamp": "2026-10-24T07:26:29.148Z",
+      "event": "Actual MFA OTP (178179) dispatched to patient MED-00000125 (9876543210)",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1792826870765",
+      "timestamp": "2026-10-24T07:27:50.765Z",
+      "event": "Actual MFA OTP (198194) dispatched to patient MED-00000125 (9876543210)",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1792826892984",
+      "timestamp": "2026-10-24T07:28:12.984Z",
+      "event": "Cryptographic MFA OTP dispatched to patient MED-00000125 (9876543210)",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1792826900159",
+      "timestamp": "2026-10-24T07:28:20.159Z",
+      "event": "MFA cryptographic verification passed for patient MED-00000125",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1792826909484",
+      "timestamp": "2026-10-24T07:28:29.484Z",
+      "event": "Registration OTP dispatched via SMS API to +9811223344 and alex.mercer@health.test [Registration ID: REG-1792826906974-b9a152]",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1792826913170",
+      "timestamp": "2026-10-24T07:28:33.170Z",
+      "event": "New digital identity verified and created: MED-0000129 for Alex Mercer (9811223344)",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1792828049524",
+      "timestamp": "2026-10-24T07:47:29.524Z",
+      "event": "Real Phone OTP dispatched to +919876543210 via Delivered via Telecom SMS Gateway (Message ID: TX-94FBB273-9524)",
+      "ip": "127.0.0.1",
+      "status": "PENDING",
+      "severity": "info"
+    },
+    {
+      "id": "SEC-1792828053217",
+      "timestamp": "2026-10-24T07:47:33.217Z",
+      "event": "Real Phone OTP verified for +919876543210 (Health ID: MED-00000125)",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1792828062424",
+      "timestamp": "2026-10-24T07:47:42.424Z",
+      "event": "Firebase Auth synchronized: MED-FBTEST for Chetna Sharma (UID: fb-test-user-991)",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    }
+  ]
+}

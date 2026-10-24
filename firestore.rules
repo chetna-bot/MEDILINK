@@ -1,0 +1,144 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Security Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "240160226137.chetna@gdgu.org" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // 1. Users collection: /users/{userId}
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'name', 'role', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'name', 'email', 'phone', 'role', 'photoURL', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid == request.auth.uid &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+        data.role in ['Patient', 'Doctor', 'Hospital', 'Admin'] &&
+        (!('email' in data) || (data.email is string && data.email.size() <= 150)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 30));
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && isValidId(userId) && isOwner(userId) && isValidUser(incoming());
+      allow update: if isSignedIn() && isValidId(userId) && isOwner(userId) && isValidUser(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'email', 'phone', 'photoURL', 'updatedAt']);
+      allow delete: if isAdmin();
+    }
+
+    // 2. Patients collection: /patients/{patientId}
+    function isValidPatient(data) {
+      return data.keys().hasAll(['id', 'userId', 'name', 'phone', 'createdAt']) &&
+        data.id is string && data.id.size() <= 64 &&
+        data.userId is string && data.userId == request.auth.uid &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+        data.phone is string && data.phone.size() <= 30;
+    }
+
+    match /patients/{patientId} {
+      allow get: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin() ||
+        exists(/databases/$(database)/documents/consents/$(patientId + '_' + request.auth.uid))
+      );
+      allow list: if isSignedIn() && (
+        isAdmin() ||
+        (resource.data.userId == request.auth.uid)
+      );
+      allow create: if isSignedIn() && isValidId(patientId) && isValidPatient(incoming());
+      allow update: if isSignedIn() && isValidId(patientId) && isValidPatient(incoming()) &&
+        (existing().userId == request.auth.uid || isAdmin()) &&
+        incoming().id == existing().id &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin();
+    }
+
+    // 3. Medical Records: /records/{recordId}
+    function isValidRecord(data) {
+      return data.keys().hasAll(['id', 'patientId', 'userId', 'title', 'type', 'date', 'createdAt']) &&
+        data.id is string && data.id.size() <= 64 &&
+        data.patientId is string && data.patientId.size() <= 64 &&
+        data.title is string && data.title.size() > 0 && data.title.size() <= 150 &&
+        data.type is string && data.type.size() <= 50;
+    }
+
+    match /records/{recordId} {
+      allow get: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin() ||
+        exists(/databases/$(database)/documents/consents/$(resource.data.patientId + '_' + request.auth.uid))
+      );
+      allow list: if isSignedIn() && (
+        isAdmin() ||
+        (resource.data.userId == request.auth.uid)
+      );
+      allow create: if isSignedIn() && isValidId(recordId) && isValidRecord(incoming());
+      allow update: if isSignedIn() && isValidId(recordId) && isValidRecord(incoming()) &&
+        (existing().userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin() || (isSignedIn() && existing().userId == request.auth.uid);
+    }
+
+    // 4. Consent Requests: /consents/{consentId}
+    match /consents/{consentId} {
+      allow get: if isSignedIn() && (
+        resource.data.patientUserId == request.auth.uid ||
+        resource.data.doctorId == request.auth.uid ||
+        isAdmin()
+      );
+      allow list: if isSignedIn() && (
+        resource.data.patientUserId == request.auth.uid ||
+        resource.data.doctorId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && isValidId(consentId);
+      allow update: if isSignedIn() && isValidId(consentId) && (
+        resource.data.patientUserId == request.auth.uid ||
+        resource.data.doctorId == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 5. Audit Logs: /auditLogs/{logId} (Immutable HIPAA trail)
+    match /auditLogs/{logId} {
+      allow get: if isSignedIn() && (resource.data.patientId != null || isAdmin());
+      allow list: if isSignedIn() && isAdmin();
+      allow create: if isSignedIn() && isValidId(logId);
+      allow update: if false; // Immutable audit log
+      allow delete: if false; // Non-repudiation
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "MedLink",
+  "description": "A secure, unified digital health record system connecting patients, hospitals, and doctors with built-in consent workflows, interactive timelines, and AI report summarization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

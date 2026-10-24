@@ -1,0 +1,113 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated user profile and role mapping",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "description": "User display name", "maxLength": 100 },
+        "email": { "type": "string", "description": "User email address", "maxLength": 150 },
+        "phone": { "type": "string", "description": "Verified telephone number", "maxLength": 30 },
+        "role": { "type": "string", "description": "Role: Patient, Doctor, Hospital, Admin", "enum": ["Patient", "Doctor", "Hospital", "Admin"] },
+        "photoURL": { "type": "string", "description": "Profile picture URL", "maxLength": 500 },
+        "createdAt": { "type": "string", "description": "ISO timestamp of creation" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of last update" }
+      },
+      "required": ["uid", "name", "role", "createdAt"]
+    },
+    "PatientProfile": {
+      "title": "PatientProfile",
+      "description": "Patient medical demographics and vital records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Patient unique ID" },
+        "userId": { "type": "string", "description": "Firebase Auth UID owner" },
+        "name": { "type": "string", "description": "Full legal name", "maxLength": 100 },
+        "phone": { "type": "string", "description": "Contact number", "maxLength": 30 },
+        "email": { "type": "string", "description": "Email address", "maxLength": 150 },
+        "bloodGroup": { "type": "string", "description": "Blood group ABO/Rh", "maxLength": 10 },
+        "allergies": { "type": "array", "description": "List of drug/food allergies" },
+        "chronicDiseases": { "type": "array", "description": "Documented chronic illnesses" },
+        "dob": { "type": "string", "description": "Date of birth YYYY-MM-DD", "maxLength": 20 },
+        "aadhaar": { "type": "string", "description": "National ID number", "maxLength": 30 },
+        "emergencyPhone": { "type": "string", "description": "Emergency contact phone", "maxLength": 30 },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "userId", "name", "phone", "createdAt"]
+    },
+    "MedicalRecord": {
+      "title": "MedicalRecord",
+      "description": "Clinical encounter, lab test, or diagnostic scan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Record ID" },
+        "patientId": { "type": "string", "description": "Patient identifier" },
+        "userId": { "type": "string", "description": "Patient Auth UID" },
+        "title": { "type": "string", "description": "Record title", "maxLength": 150 },
+        "type": { "type": "string", "description": "Type of record: Lab Report, Prescription, Diagnostic Scan", "maxLength": 50 },
+        "hospitalName": { "type": "string", "description": "Hospital name", "maxLength": 150 },
+        "doctorName": { "type": "string", "description": "Attending doctor", "maxLength": 150 },
+        "date": { "type": "string", "description": "Encounter date", "maxLength": 30 },
+        "diagnoses": { "type": "string", "description": "Clinical diagnosis summary", "maxLength": 500 },
+        "notes": { "type": "string", "description": "Doctor progress notes", "maxLength": 2000 },
+        "aiSummary": { "type": "string", "description": "AI clinical summary", "maxLength": 2000 },
+        "createdAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "patientId", "userId", "title", "type", "date", "createdAt"]
+    },
+    "ConsentRequest": {
+      "title": "ConsentRequest",
+      "description": "Patient data sharing consent for doctors and hospitals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Consent ID" },
+        "patientId": { "type": "string", "description": "Patient ID" },
+        "patientUserId": { "type": "string", "description": "Patient Auth UID" },
+        "hospitalName": { "type": "string", "description": "Hospital requesting access", "maxLength": 150 },
+        "doctorName": { "type": "string", "description": "Doctor name", "maxLength": 150 },
+        "status": { "type": "string", "description": "approved, pending, or revoked", "enum": ["approved", "pending", "revoked"] },
+        "purpose": { "type": "string", "description": "Clinical purpose of request", "maxLength": 250 },
+        "timestamp": { "type": "string", "description": "Timestamp" }
+      },
+      "required": ["id", "patientId", "patientUserId", "status", "timestamp"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "HIPAA immutable clinical access and modification log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Log ID" },
+        "patientId": { "type": "string", "description": "Subject patient ID" },
+        "actorName": { "type": "string", "description": "Actor identity", "maxLength": 150 },
+        "actorRole": { "type": "string", "description": "Actor clinical role", "maxLength": 50 },
+        "action": { "type": "string", "description": "Action performed", "maxLength": 250 },
+        "timestamp": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["id", "patientId", "actorName", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Authenticated user profile documents"
+    },
+    "/patients/{patientId}": {
+      "schema": "PatientProfile",
+      "description": "Clinical patient master demographic and vitals data"
+    },
+    "/records/{recordId}": {
+      "schema": "MedicalRecord",
+      "description": "Encrypted patient medical records and lab diagnostics"
+    },
+    "/consents/{consentId}": {
+      "schema": "ConsentRequest",
+      "description": "Inter-hospital data sharing authorizations"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Compliance audit logs for clinical access"
+    }
+  }
+}
