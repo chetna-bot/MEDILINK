@@ -42,45 +42,6 @@ export default function App() {
     sessionStorage.clear();
   };
 
-  // Demo Sandbox Switchers: Instantly log in as any role for evaluator testing
-  const sandboxLogin = async (target: 'Patient' | 'Hospital' | 'Doctor' | 'Admin') => {
-    let payload = {};
-    if (target === 'Patient') {
-      payload = { role: 'Patient', medicalId: 'MED-00000125' };
-    } else if (target === 'Hospital') {
-      payload = { role: 'Hospital', hospitalId: 'HOSP-01' };
-    } else if (target === 'Doctor') {
-      payload = { role: 'Doctor', doctorId: 'DOC-01' };
-    } else if (target === 'Admin') {
-      payload = { role: 'Admin', passcode: 'admin123' };
-    }
-
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      if (target === 'Patient') {
-        // Auto pass OTP for quick demo toggle
-        const otpRes = await fetch('/api/auth/verify-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ patientId: data.patientId, otp: '123456' }),
-        });
-        const otpData = await otpRes.json();
-        handleLoginSuccess('Patient', otpData.user, otpData.token);
-      } else {
-        handleLoginSuccess(target, data.user, data.token);
-      }
-    } catch (e) {
-      console.error("Sandbox authentication failed:", e);
-    }
-  };
-
   const handleProfileUpdate = (updatedPatient: any) => {
     setCurrentUser(updatedPatient);
     sessionStorage.setItem('medlink_user', JSON.stringify(updatedPatient));
@@ -107,24 +68,6 @@ export default function App() {
                 <span className="text-base font-bold tracking-tight text-white">MedLink</span>
                 <span className="text-slate-600 hidden sm:inline">|</span>
                 <span className="text-xs text-slate-400 hidden sm:inline font-medium">Unified Health Cloud</span>
-              </div>
-
-              {/* Fast Role Simulator for evaluation */}
-              <div className="hidden lg:flex items-center gap-1.5 ml-4 pl-4 border-l border-slate-800">
-                <span className="text-[10px] text-slate-400 font-medium mr-1 uppercase tracking-wider">Switch View:</span>
-                {(['Patient', 'Doctor', 'Hospital', 'Admin'] as const).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => sandboxLogin(r)}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors ${
-                      currentRole === r
-                        ? 'bg-sky-600 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                    }`}
-                  >
-                    {r}
-                  </button>
-                ))}
               </div>
             </div>
 

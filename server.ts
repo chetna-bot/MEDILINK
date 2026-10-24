@@ -1152,7 +1152,7 @@ app.post("/api/auth/register-patient", (req, res) => {
   });
 });
 
-// Firebase Authentication Session Sync (Google Sign-In / Firebase Phone Auth)
+// Firebase Authentication Session Sync (Google Sign-In)
 app.post("/api/auth/firebase-session", (req, res) => {
   const { uid, email, displayName, photoURL, phoneNumber, role = "Patient" } = req.body;
   const db = readDB();
@@ -1161,7 +1161,44 @@ app.post("/api/auth/firebase-session", (req, res) => {
     return res.status(400).json({ error: "Firebase UID is required." });
   }
 
-  // Look for existing patient by UID, email, or phone
+  if (role === "Doctor") {
+    const doc = db.doctors.find((d: any) => d.firebaseUid === uid || (email && d.email === email)) || db.doctors[0];
+    return res.json({
+      verified: true,
+      token: "FIREBASE_JWT_DOC_" + uid,
+      role: "Doctor",
+      user: {
+        ...doc,
+        name: displayName && !displayName.includes("Authorized") ? `Dr. ${displayName}` : doc.name,
+        photoURL: photoURL || doc.photoURL
+      }
+    });
+  }
+
+  if (role === "Hospital") {
+    const hosp = db.hospitals.find((h: any) => h.firebaseUid === uid || (email && h.email === email)) || db.hospitals[0];
+    return res.json({
+      verified: true,
+      token: "FIREBASE_JWT_HOSP_" + uid,
+      role: "Hospital",
+      user: hosp
+    });
+  }
+
+  if (role === "Admin") {
+    return res.json({
+      verified: true,
+      token: "FIREBASE_JWT_ADMIN_" + uid,
+      role: "Admin",
+      user: {
+        id: "ADMIN-01",
+        name: displayName || "System Administrator",
+        email: email || "admin@medlink.health"
+      }
+    });
+  }
+
+  // Patient Role
   let patient = Object.values(db.patients).find(
     (p: any) => p.firebaseUid === uid || (email && p.email && p.email.toLowerCase() === email.toLowerCase()) || (phoneNumber && p.phone === phoneNumber)
   );
@@ -1176,7 +1213,7 @@ app.post("/api/auth/firebase-session", (req, res) => {
 
     return res.json({
       verified: true,
-      token: "FIREBASE_JWT_" + uid,
+      token: "FIREBASE_JWT_PATIENT_" + uid,
       role: "Patient",
       user: patient,
       isNew: false
@@ -1221,7 +1258,7 @@ app.post("/api/auth/firebase-session", (req, res) => {
   db.securityLogs.push({
     id: "SEC-" + Date.now(),
     timestamp: new Date().toISOString(),
-    event: `Firebase Auth synchronized: ${medId} for ${newPatient.name} (UID: ${uid})`,
+    event: `Firebase Auth synchronized: ${medId} for ${newPatient.name} (UID: ${uid}) [Role: Patient]`,
     ip: req.ip || "unknown",
     status: "PASS",
     severity: "success"
@@ -1231,7 +1268,7 @@ app.post("/api/auth/firebase-session", (req, res) => {
 
   return res.json({
     verified: true,
-    token: "FIREBASE_JWT_" + uid,
+    token: "FIREBASE_JWT_PATIENT_" + uid,
     role: "Patient",
     user: newPatient,
     isNew: true

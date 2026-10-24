@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShieldAlert, CheckCircle, FileText, Plus, Trash2, Calendar, Clock, RefreshCw, ChevronDown, User, Heart, Send, Cloud, HardDrive, UploadCloud, Database } from 'lucide-react';
 import { RecordType, Medicine } from '../types';
-import GCSStorageVault from './GCSStorageVault';
 
 const doctorAvatarImage = new URL('../assets/images/telehealth_doctor_avatar_1792232373100.jpg', import.meta.url).href;
 
@@ -465,48 +464,17 @@ export default function HospitalDoctorView({ token, user, role }: HospitalDoctor
               </div>
             </div>
 
-            {/* Sub-tab Navigation: Clinical Timeline vs GCS Storage Vault */}
+            {/* Clinical Timeline Sub-bar */}
             <div className="flex items-center justify-between bg-white p-2.5 rounded-2xl border border-slate-150 shadow-xs">
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setActivePatientSubTab('timeline')}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activePatientSubTab === 'timeline'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <FileText size={13} /> Clinical Timeline
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActivePatientSubTab('gcs_vault')}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activePatientSubTab === 'gcs_vault'
-                      ? 'bg-[#006666] text-white shadow-xs'
-                      : 'bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200'
-                  }`}
-                >
-                  <Cloud size={13} /> Google Cloud Storage Vault
-                </button>
+                <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+                  <FileText size={13} className="text-blue-600" /> Clinical Timeline
+                </span>
               </div>
-
-              <span className="text-[10px] font-mono text-slate-400 hidden sm:inline px-2">
-                GCS Partition: users/{selectedPatient.id}/*
-              </span>
             </div>
 
-            {activePatientSubTab === 'gcs_vault' ? (
-              <GCSStorageVault
-                userId={selectedPatient.id}
-                userName={selectedPatient.name}
-                userRole={role}
-                token={token}
-              />
-            ) : (
-              /* Split Grid: Upload records & Current Unified History */
-              <div className="grid grid-cols-12 gap-6">
+            {/* Split Grid: Upload records & Current Unified History */}
+            <div className="grid grid-cols-12 gap-6">
               
               {/* Write New Record Module (col-span-5) */}
               <div className="col-span-5 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
@@ -775,7 +743,6 @@ export default function HospitalDoctorView({ token, user, role }: HospitalDoctor
               </div>
 
             </div>
-          )}
 
           </div>
         )}

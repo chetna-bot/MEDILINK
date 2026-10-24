@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Building, Award, Users, AlertTriangle, Check, Trash2, Heart, RefreshCw, Cloud, Database, HardDrive, Lock } from 'lucide-react';
+import { Shield, Building, Award, Users, AlertTriangle, Check, Trash2, Heart, RefreshCw, Database, HardDrive, Lock } from 'lucide-react';
 
 interface AdminViewProps {
   token: string;
@@ -10,8 +10,6 @@ export default function AdminView({ token }: AdminViewProps) {
   const [hospitals, setHospitals] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [securityLogs, setSecurityLogs] = useState<any[]>([]);
-  const [gcsStatus, setGcsStatus] = useState<any>(null);
-  const [syncingGcs, setSyncingGcs] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -19,12 +17,9 @@ export default function AdminView({ token }: AdminViewProps) {
   const fetchAdminData = async () => {
     setLoading(true);
     try {
-      const [res, gcsRes] = await Promise.all([
-        fetch('/api/admin/analytics', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        fetch('/api/gcs/status')
-      ]);
+      const res = await fetch('/api/admin/analytics', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch admin statistics');
@@ -33,11 +28,6 @@ export default function AdminView({ token }: AdminViewProps) {
       setHospitals(data.hospitals);
       setDoctors(data.doctors);
       setSecurityLogs(data.securityLogs);
-
-      if (gcsRes.ok) {
-        const gcsData = await gcsRes.json();
-        setGcsStatus(gcsData);
-      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -277,72 +267,8 @@ export default function AdminView({ token }: AdminViewProps) {
 
         </div>
 
-        {/* Security Logs & GCS Monitor */}
+        {/* Security Logs Monitor */}
         <div className="col-span-4 space-y-6">
-          
-          {/* Google Cloud Storage Manager */}
-          <div className="bg-slate-900 rounded-3xl p-5 text-white shadow-sm border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Cloud className="text-sky-400" size={18} />
-                <h3 className="text-xs font-bold text-slate-200">
-                  Google Cloud Storage Health
-                </h3>
-              </div>
-              <span className="text-[11px] font-mono text-emerald-400">
-                Multi-Tenant Vault
-              </span>
-            </div>
-
-            <div className="space-y-2 text-[11px]">
-              <div className="flex justify-between items-center py-1 border-b border-slate-800">
-                <span className="text-slate-400">Target Bucket:</span>
-                <span className="font-mono font-semibold text-sky-300 truncate max-w-[170px]">
-                  {gcsStatus?.bucket || 'medlink-health-records'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-1 border-b border-slate-800">
-                <span className="text-slate-400">User Partitions:</span>
-                <span className="font-semibold text-white">
-                  {gcsStatus?.usersWithStorage || stats?.patientsCount || 1} Isolated Spaces
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-1 border-b border-slate-800">
-                <span className="text-slate-400">Objects in GCS:</span>
-                <span className="font-semibold text-sky-200">
-                  {gcsStatus?.totalFiles || 0} Files
-                </span>
-              </div>
-              <div className="flex justify-between items-center py-1 border-b border-slate-800">
-                <span className="text-slate-400">Isolation Rule:</span>
-                <span className="font-mono text-[10px] text-emerald-400">
-                  /users/[id]/files/*
-                </span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={async () => {
-                setSyncingGcs(true);
-                try {
-                  const res = await fetch('/api/gcs/status');
-                  const data = await res.json();
-                  setGcsStatus(data);
-                  setMessage('Google Cloud Storage connection & ledger state refreshed successfully!');
-                } catch {
-                  setError('Failed to refresh GCS.');
-                } finally {
-                  setSyncingGcs(false);
-                }
-              }}
-              disabled={syncingGcs}
-              className="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-            >
-              <RefreshCw size={13} className={syncingGcs ? 'animate-spin' : ''} />
-              {syncingGcs ? 'Auditing GCS Vault...' : 'Verify Cloud Storage Health'}
-            </button>
-          </div>
 
           <div className="bg-slate-900 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col h-[520px]">
             <div className="flex items-center gap-2 mb-4 shrink-0">

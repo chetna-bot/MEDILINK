@@ -107,6 +107,25 @@
       "phoneVerified": true,
       "emailVerified": true,
       "registrationDate": "2026-10-24T07:47:42.424Z"
+    },
+    "MED-GOOGPA": {
+      "id": "MED-GOOGPA",
+      "firebaseUid": "goog-pat-123",
+      "name": "Jane Doe",
+      "phone": "",
+      "email": "jane@patient.test",
+      "aadhaar": "",
+      "passport": "",
+      "dob": "1995-01-01",
+      "bloodGroup": "O+",
+      "allergies": [],
+      "chronicDiseases": [],
+      "emergencyContacts": [],
+      "avatar": "JD",
+      "avatarUrl": "",
+      "phoneVerified": false,
+      "emailVerified": true,
+      "registrationDate": "2026-10-24T08:08:22.261Z"
     }
   },
   "hospitals": [
@@ -430,6 +449,15 @@
         "date": "2026-10-24T07:47:42.424Z",
         "read": false
       }
+    ],
+    "MED-GOOGPA": [
+      {
+        "id": "NOT-FB-WELCOME",
+        "title": "Welcome to MedLink Health Cloud!",
+        "message": "Your verified unique Medical ID is MED-GOOGPA, authenticated via Firebase Secure Auth.",
+        "date": "2026-10-24T08:08:22.261Z",
+        "read": false
+      }
     ]
   },
   "securityLogs": [
@@ -597,6 +625,14 @@
       "id": "SEC-1792828062424",
       "timestamp": "2026-10-24T07:47:42.424Z",
       "event": "Firebase Auth synchronized: MED-FBTEST for Chetna Sharma (UID: fb-test-user-991)",
+      "ip": "127.0.0.1",
+      "status": "PASS",
+      "severity": "success"
+    },
+    {
+      "id": "SEC-1792829302261",
+      "timestamp": "2026-10-24T08:08:22.261Z",
+      "event": "Firebase Auth synchronized: MED-GOOGPA for Jane Doe (UID: goog-pat-123) [Role: Patient]",
       "ip": "127.0.0.1",
       "status": "PASS",
       "severity": "success"

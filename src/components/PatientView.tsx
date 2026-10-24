@@ -7,7 +7,6 @@ import {
   Cloud, Database, HardDrive, UploadCloud
 } from 'lucide-react';
 import { MedicineReminder, Appointment, AuditLog, ConsentRequest, MedicalRecord } from '../types';
-import GCSStorageVault from './GCSStorageVault';
 
 // Clinical Scan & Laboratory Microscopy Images
 const chestXrayImage = new URL('../assets/images/chest_xray_scan_1783436069587.jpg', import.meta.url).href;
@@ -1088,19 +1087,7 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
             }`}
             id="tab-btn-report-analyzer"
           >
-            <Sparkles size={16} className="text-amber-400" /> Report Analyzer (AI RAG)
-          </button>
-
-          <button
-            onClick={() => setActiveTab('cloud_storage')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              activeTab === 'cloud_storage'
-                ? 'bg-sky-600 text-white shadow-xs font-semibold'
-                : 'text-slate-400 hover:bg-slate-800/80 hover:text-slate-200'
-            }`}
-            id="tab-btn-cloud-storage"
-          >
-            <Cloud size={16} className="text-sky-400" /> Cloud Storage Vault
+            <Sparkles size={16} className="text-amber-400" /> Report Analyzer
           </button>
         </nav>
 
@@ -2758,19 +2745,19 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
           </div>
         )}
 
-        {/* ======================= TAB 6: CLINICAL REPORT ANALYZER (RAG) ======================= */}
+        {/* ======================= TAB 6: CLINICAL REPORT ANALYZER ======================= */}
         {activeTab === 'report_analyzer' && (
           <div className="space-y-6" id="view-report-analyzer">
             
             {/* Header Title Bar */}
             <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-black text-slate-900 tracking-tight">Clinical Report Analyzer</h2>
-                <p className="text-xs text-slate-500 mt-1">Cross-reference and analyze multiple diagnostic scans, lab reports, and doctor notes using safe clinical RAG technology</p>
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">Report Analyzer</h2>
+                <p className="text-xs text-slate-500 mt-1">Cross-reference and analyze multiple diagnostic scans, lab reports, and doctor notes using intelligent clinical analysis</p>
               </div>
               <span className="px-3.5 py-1.5 bg-teal-50 text-[#006666] border border-teal-100 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                SECURE RAG LEDGER NODE
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                SECURE AI ANALYSIS NODE
               </span>
             </div>
 
@@ -2983,7 +2970,7 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
                     <div className="flex gap-3 items-start bg-amber-50/40 p-4 rounded-2xl border border-amber-100/60">
                       <Info className="text-amber-600 shrink-0 mt-0.5" size={16} />
                       <p className="text-[10px] text-amber-800 leading-relaxed font-semibold">
-                        Medical Disclaimer: This report analysis is powered by secure artificial intelligence (RAG) to help translate complex medical vocabulary. It does not replace professional clinical diagnosis, primary care prescriptions, or definitive consultation with your medical team.
+                        Medical Disclaimer: This report analysis is powered by secure artificial intelligence to help translate complex medical vocabulary. It does not replace professional clinical diagnosis, primary care prescriptions, or definitive consultation with your medical team.
                       </p>
                     </div>
                   </div>
@@ -2995,15 +2982,6 @@ export default function PatientView({ token, patient, onProfileUpdate }: Patient
           </div>
         )}
 
-        {/* ======================= TAB 7: GOOGLE CLOUD STORAGE VAULT ======================= */}
-        {activeTab === 'cloud_storage' && (
-          <GCSStorageVault
-            userId={patient.id}
-            userName={patient.name}
-            userRole="Patient"
-            token={token}
-          />
-        )}
 
         {/* ======================= EMERGENCY SMART HEALTH PASS MODAL ======================= */}
         {isHealthPassModalOpen && (
